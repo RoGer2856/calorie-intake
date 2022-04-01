@@ -1,5 +1,3 @@
-use crate::utils::LogError;
-
 #[derive(Debug)]
 pub enum JwtError {
     InvalidSecretSize,
@@ -51,34 +49,28 @@ impl JwtManager {
         Ok(ret)
     }
 
-    fn create_token(
+    pub fn create_token(
         &self,
         claims: &std::collections::BTreeMap<String, String>,
     ) -> Result<String, JwtError> {
         use hmac::Mac;
         use jwt::SignWithKey;
 
-        let key: hmac::Hmac<sha2::Sha256> = hmac::Hmac::new_from_slice(self.secret_key.as_bytes())
-            .log_error(|| log::error!("Invalid secret size when creating a jwt"))?;
+        let key: hmac::Hmac<sha2::Sha256> = hmac::Hmac::new_from_slice(self.secret_key.as_bytes())?;
 
-        Ok(claims
-            .sign_with_key(&key)
-            .log_error(|| log::error!("Could not create jwt"))?)
+        Ok(claims.sign_with_key(&key)?)
     }
 
-    fn get_verified_claims(
+    pub fn get_verified_claims(
         &self,
         jwt: &str,
     ) -> Result<std::collections::BTreeMap<String, String>, JwtError> {
         use hmac::Mac;
         use jwt::VerifyWithKey;
 
-        let key: hmac::Hmac<sha2::Sha256> = hmac::Hmac::new_from_slice(self.secret_key.as_bytes())
-            .log_error(|| log::error!("Invalid secret size when creating a jwt"))?;
+        let key: hmac::Hmac<sha2::Sha256> = hmac::Hmac::new_from_slice(self.secret_key.as_bytes())?;
 
-        let claims: std::collections::BTreeMap<String, String> = jwt
-            .verify_with_key(&key)
-            .log_error(|| log::error!("Could not verify jwt"))?;
+        let claims: std::collections::BTreeMap<String, String> = jwt.verify_with_key(&key)?;
 
         Ok(claims)
     }
