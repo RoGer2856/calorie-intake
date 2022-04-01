@@ -2,6 +2,8 @@ pub struct ErrorResponse(pub hyper::Response<hyper::Body>);
 
 impl ErrorResponse {
     pub fn from_status_code(status_code: hyper::StatusCode) -> Self {
-        Self(crate::hyper_helpers::from_status_code(status_code))
+        Self(crate::hyper_helpers::response::from_status_code(
+            status_code,
+        ))
     }
 }
