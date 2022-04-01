@@ -6,6 +6,7 @@ mod api_client;
 mod app_context;
 mod config;
 pub mod hyper_helpers;
+pub mod utils;
 
 pub use api_client::*;
 pub use app_context::*;
