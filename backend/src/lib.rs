@@ -18,7 +18,7 @@ pub struct Application {
 }
 
 impl Application {
-    pub fn block_start(config: Box<dyn crate::Config + Send>) {
+    pub fn block_start(config: Box<dyn crate::Config>) {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
@@ -33,7 +33,7 @@ impl Application {
         });
     }
 
-    pub async fn spawn_start(config: Box<dyn crate::Config + Send>) -> Self {
+    pub async fn spawn_start(config: Box<dyn crate::Config>) -> Self {
         let listener_address = config.get_listener_address();
         let application_context = crate::AppContext::new(config);
         let server = crate::hyper_helpers::Server::spawn_start(

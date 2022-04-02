@@ -26,10 +26,7 @@ pub async fn run_test_custom_timeout(
     timeout: tokio::time::Duration,
     test: impl std::future::Future<Output = ()>,
 ) {
-    let _ = env_logger::builder()
-        .parse_filters("debug")
-        // .is_test(true)
-        .try_init();
+    env_logger::init();
 
     let start_time = std::time::Instant::now();
 
