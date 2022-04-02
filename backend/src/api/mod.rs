@@ -1,3 +1,4 @@
+pub mod food;
 mod router;
 mod status;
 

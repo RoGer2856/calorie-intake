@@ -1,3 +1,5 @@
+use crate::api::food::messages::*;
+
 pub struct ApiClient {
     base_url: String,
     deserializer: crate::hyper_helpers::response::Deserializer,
@@ -62,6 +64,30 @@ impl ApiClient {
         self.json_request::<crate::hyper_helpers::EmptyMessage, crate::hyper_helpers::EmptyMessage>(
             hyper::Method::GET,
             &crate::hyper_helpers::EmptyMessage::new(),
+            "/status",
+        )
+        .await
+    }
+
+    pub async fn add_food(
+        &mut self,
+        food_request: &AddFoodRequest,
+    ) -> Result<StructResponse<AddFoodResponse>, ApiClientError> {
+        self.json_request::<AddFoodRequest, AddFoodResponse>(
+            hyper::Method::GET,
+            &food_request,
+            "/status",
+        )
+        .await
+    }
+
+    pub async fn get_food_list(
+        &mut self,
+        req: &GetFoodListRequest,
+    ) -> Result<StructResponse<GetFoodListResponse>, ApiClientError> {
+        self.json_request::<GetFoodListRequest, GetFoodListResponse>(
+            hyper::Method::GET,
+            req,
             "/status",
         )
         .await

@@ -1,4 +1,4 @@
-mod hello;
+mod food_regular_user;
 
 pub mod test_utils;
 

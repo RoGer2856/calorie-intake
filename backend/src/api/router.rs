@@ -6,6 +6,8 @@ pub async fn router(
 
     match (req.method(), req.uri().path().to_lowercase().as_str()) {
         (&hyper::Method::GET, "/status") => crate::api::status(req, app_context).await,
+        (&hyper::Method::GET, "/food") => crate::api::food::get_food_list(req, app_context).await,
+        (&hyper::Method::POST, "/food") => crate::api::food::add_food(req, app_context).await,
 
         // 404 Not Found
         _ => Err(crate::hyper_helpers::ErrorResponse::from_status_code(
