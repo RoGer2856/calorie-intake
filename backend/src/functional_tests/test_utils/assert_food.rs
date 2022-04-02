@@ -22,19 +22,19 @@ pub fn generate_example_foods() -> Vec<PartialFood> {
 
     ret.push(PartialFood {
         name: "Hamburger".into(),
-        calorie: 600,
+        calories: 600,
         time: "2022 March 2 8:0".into(),
     });
 
     ret.push(PartialFood {
         name: "Chicken".into(),
-        calorie: 300,
+        calories: 300,
         time: "2022 March 2 12:00".into(),
     });
 
     ret.push(PartialFood {
         name: "Scrambled eggs".into(),
-        calorie: 400,
+        calories: 400,
         time: "2022 March 2 18:00".into(),
     });
 

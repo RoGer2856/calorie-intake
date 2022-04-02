@@ -16,19 +16,19 @@ fn create_food_for_the_last_n_days(days: i64) -> Vec<PartialFood> {
 
         let breakfast = PartialFood {
             name: "scrambled eggs".into(),
-            calorie: calories_for_the_day / 4 + 100,
+            calories: calories_for_the_day / 4 + 100,
             time: (day_start + chrono::Duration::hours(7)).to_rfc2822(),
         };
 
         let lunch = PartialFood {
             name: "grilled chicken".into(),
-            calorie: calories_for_the_day / 2,
+            calories: calories_for_the_day / 2,
             time: (day_start + chrono::Duration::hours(12)).to_rfc2822(),
         };
 
         let dinner = PartialFood {
             name: "slice of pizza".into(),
-            calorie: calories_for_the_day / 4 - 100,
+            calories: calories_for_the_day / 4 - 100,
             time: (day_start + chrono::Duration::hours(18)).to_rfc2822(),
         };
 

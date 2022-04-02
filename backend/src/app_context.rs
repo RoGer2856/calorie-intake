@@ -76,7 +76,7 @@ mod test {
 
         let partial_food0 = PartialFood {
             name: "Hamburger".into(),
-            calorie: 600,
+            calories: 600,
             time: "2022 March 2 8:0".into(),
         };
 
@@ -89,7 +89,7 @@ mod test {
 
         let partial_food1 = PartialFood {
             name: "Chicken".into(),
-            calorie: 300,
+            calories: 300,
             time: "2022 March 2 12:00".into(),
         };
 
