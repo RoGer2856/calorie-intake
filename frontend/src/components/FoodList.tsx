@@ -1,9 +1,9 @@
 import { ReactElement } from "react";
-import { IFood } from "../messages/Food";
+import { IFoodResponse } from "../messages/Food";
 import FoodView from "./FoodView";
 
 export default function FoodList(props: {
-    foods: IFood[],
+    foods: IFoodResponse[],
 }): ReactElement {
     return (
         <>
