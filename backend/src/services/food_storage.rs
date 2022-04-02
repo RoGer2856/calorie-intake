@@ -1,7 +1,7 @@
 #[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Clone)]
 pub struct PartialFood {
     pub name: String,
-    pub calorie: i16,
+    pub calorie: u16,
     pub time: String,
 }
 
@@ -12,7 +12,7 @@ pub struct FoodId(pub String);
 pub struct Food {
     pub id: FoodId,
     pub name: String,
-    pub calorie: i16,
+    pub calorie: u16,
     pub time: String,
 }
 
