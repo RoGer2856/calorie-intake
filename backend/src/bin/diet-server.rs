@@ -8,7 +8,7 @@ fn create_food_for_the_last_n_days(days: i64) -> Vec<AddFoodRequest> {
 
     let day_start = diet::utils::time::current_day_start_local();
 
-    for i in 0..days - 1 {
+    for i in 0..days {
         let mut calories_for_the_day = rand::random::<u16>() % 1000;
         calories_for_the_day += 600;
 
@@ -87,7 +87,7 @@ pub fn main() {
             let foods = create_food_for_the_last_n_days(70);
             add_foods(&mut api_client, access_token_jane, &foods).await;
 
-            let foods = create_food_for_the_last_n_days(70);
+            let foods = create_food_for_the_last_n_days(2);
             add_foods(&mut api_client, access_token_john, &foods).await;
         }
 
