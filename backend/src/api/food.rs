@@ -24,12 +24,32 @@ pub mod messages {
 }
 
 pub async fn add_food(
-    _req: hyper::Request<hyper::Body>,
-    _app_context: crate::AppContext,
+    req: hyper::Request<hyper::Body>,
+    app_context: crate::AppContext,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
+    let mut deserializer = crate::hyper_helpers::response::Deserializer::new();
+    let payload = deserializer
+        .read_request_as_json::<messages::AddFoodRequest>(req)
+        .await?;
+
+    let authz_info = app_context
+        .authorization
+        .lock()
+        .await
+        .verify_jwt(&payload.access_token)?;
+
+    let food_storage = app_context
+        .food_storage
+        .lock()
+        .await
+        .get_food_storage_for_user(authz_info.username);
+    let id = food_storage.lock().await.add_food(payload.food)?;
+
+    let resp_msg = messages::AddFoodResponse { id: id.0 };
+
     Ok(crate::hyper_helpers::response::create_json_response(
         hyper::StatusCode::OK,
-        &crate::hyper_helpers::EmptyMessage::new(),
+        &resp_msg,
     )?)
 }
 

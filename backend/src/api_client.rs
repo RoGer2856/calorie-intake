@@ -74,9 +74,9 @@ impl ApiClient {
         food_request: &AddFoodRequest,
     ) -> Result<StructResponse<AddFoodResponse>, ApiClientError> {
         self.json_request::<AddFoodRequest, AddFoodResponse>(
-            hyper::Method::GET,
+            hyper::Method::POST,
             &food_request,
-            "/status",
+            "/food",
         )
         .await
     }

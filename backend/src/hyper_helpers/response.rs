@@ -60,12 +60,6 @@ impl From<serde_json::Error> for DeserializeJsonRequestError {
     }
 }
 
-impl From<DeserializeJsonRequestError> for crate::hyper_helpers::ErrorResponse {
-    fn from(_: DeserializeJsonRequestError) -> Self {
-        crate::hyper_helpers::ErrorResponse::from_status_code(hyper::StatusCode::BAD_REQUEST)
-    }
-}
-
 #[derive(Debug)]
 pub enum SerializeJsonResponseError {
     SerdeJson(serde_json::Error),
