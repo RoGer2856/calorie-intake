@@ -22,6 +22,7 @@ crypto-common = "*"
 chrono = "0.4.19"
 uuid = { version = "0.8.2", features = ["v4"] }
 rand = "0.8.5"
+querystring = "1.1.0"
 
 [dev-dependencies]
 serial_test = "0.6.0"

@@ -4,6 +4,6 @@ pub async fn status(
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
     Ok(crate::hyper_helpers::response::create_json_response(
         hyper::StatusCode::OK,
-        &crate::hyper_helpers::EmptyMessage::new(),
+        &crate::hyper_helpers::EmptyMessage,
     )?)
 }

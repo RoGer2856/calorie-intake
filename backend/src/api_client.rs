@@ -63,7 +63,7 @@ impl ApiClient {
     ) -> Result<StructResponse<crate::hyper_helpers::EmptyMessage>, ApiClientError> {
         self.json_request::<crate::hyper_helpers::EmptyMessage, crate::hyper_helpers::EmptyMessage>(
             hyper::Method::GET,
-            &crate::hyper_helpers::EmptyMessage::new(),
+            &crate::hyper_helpers::EmptyMessage,
             "/status",
         )
         .await
@@ -71,24 +71,25 @@ impl ApiClient {
 
     pub async fn add_food(
         &mut self,
+        access_token: &str,
         food_request: &AddFoodRequest,
     ) -> Result<StructResponse<AddFoodResponse>, ApiClientError> {
         self.json_request::<AddFoodRequest, AddFoodResponse>(
             hyper::Method::POST,
             &food_request,
-            "/food",
+            &("/food?access_token=".to_string() + &access_token),
         )
         .await
     }
 
     pub async fn get_food_list(
         &mut self,
-        req: &GetFoodListRequest,
+        access_token: &str,
     ) -> Result<StructResponse<GetFoodListResponse>, ApiClientError> {
-        self.json_request::<GetFoodListRequest, GetFoodListResponse>(
+        self.json_request::<crate::hyper_helpers::EmptyMessage, GetFoodListResponse>(
             hyper::Method::GET,
-            req,
-            "/food",
+            &crate::hyper_helpers::EmptyMessage,
+            &("/food?access_token=".to_string() + &access_token),
         )
         .await
     }
@@ -101,10 +102,17 @@ impl ApiClient {
     ) -> Result<StructResponse<R>, ApiClientError> {
         let client = hyper::client::Client::new();
 
-        let request = hyper::Request::builder()
-            .method(method)
-            .uri(self.create_uri(request_url)?)
-            .body(hyper::Body::from(serde_json::to_string(data)?))?;
+        let request = if method == hyper::Method::GET || method == hyper::Method::HEAD {
+            hyper::Request::builder()
+                .method(method)
+                .uri(self.create_uri(request_url)?)
+                .body(hyper::Body::empty())?
+        } else {
+            hyper::Request::builder()
+                .method(method)
+                .uri(self.create_uri(request_url)?)
+                .body(hyper::Body::from(serde_json::to_string(data)?))?
+        };
 
         let response = client.request(request).await?;
 

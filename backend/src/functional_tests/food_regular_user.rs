@@ -1,4 +1,3 @@
-use crate::api::food::messages::*;
 use crate::functional_tests::test_utils::*;
 use crate::services::*;
 
@@ -20,12 +19,7 @@ async fn no_food() {
                 .create_jwt("john".into(), RoleType::RegularUser)
                 .unwrap();
 
-            let resp = api_client
-                .get_food_list(&GetFoodListRequest {
-                    access_token: access_token.clone(),
-                })
-                .await
-                .unwrap();
+            let resp = api_client.get_food_list(&access_token).await.unwrap();
 
             assert_eq!(0, resp.object.foods.len());
         },
@@ -53,14 +47,9 @@ async fn get_multiple_foods() {
 
             let foods = generate_example_foods();
 
-            add_foods(&mut api_client, access_token.clone(), &foods).await;
+            add_foods(&mut api_client, &access_token.clone(), &foods).await;
 
-            let resp = api_client
-                .get_food_list(&GetFoodListRequest {
-                    access_token: access_token,
-                })
-                .await
-                .unwrap();
+            let resp = api_client.get_food_list(&access_token).await.unwrap();
 
             assert_eq!(foods.len(), resp.object.foods.len());
             assert!(check_food_array_equality(&foods, &resp.object.foods));
@@ -94,17 +83,12 @@ async fn multiple_user_foods() {
 
             let foods = generate_example_foods();
 
-            add_foods(&mut api_client, access_token0.clone(), &foods).await;
-            add_foods(&mut api_client, access_token1.clone(), &foods).await;
+            add_foods(&mut api_client, &access_token0.clone(), &foods).await;
+            add_foods(&mut api_client, &access_token1.clone(), &foods).await;
 
             // check the list of foods for access_token0
             {
-                let resp = api_client
-                    .get_food_list(&GetFoodListRequest {
-                        access_token: access_token0,
-                    })
-                    .await
-                    .unwrap();
+                let resp = api_client.get_food_list(&access_token0).await.unwrap();
 
                 assert_eq!(foods.len(), resp.object.foods.len());
                 assert!(check_food_array_equality(&foods, &resp.object.foods));
@@ -112,12 +96,7 @@ async fn multiple_user_foods() {
 
             // check the list of foods for access_token1
             {
-                let resp = api_client
-                    .get_food_list(&GetFoodListRequest {
-                        access_token: access_token1,
-                    })
-                    .await
-                    .unwrap();
+                let resp = api_client.get_food_list(&access_token1).await.unwrap();
 
                 assert_eq!(foods.len(), resp.object.foods.len());
                 assert!(check_food_array_equality(&foods, &resp.object.foods));

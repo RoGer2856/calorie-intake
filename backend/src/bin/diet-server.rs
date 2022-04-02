@@ -1,9 +1,9 @@
 extern crate diet;
 
-use diet::api::food::messages::PartialFood;
+use diet::api::food::messages::AddFoodRequest;
 use diet::Config;
 
-fn create_food_for_the_last_n_days(days: i64) -> Vec<PartialFood> {
+fn create_food_for_the_last_n_days(days: i64) -> Vec<AddFoodRequest> {
     let mut ret = Vec::new();
 
     let day_start = diet::utils::time::current_day_start_local();
@@ -14,19 +14,19 @@ fn create_food_for_the_last_n_days(days: i64) -> Vec<PartialFood> {
 
         let day_start = day_start - chrono::Duration::days(days - i);
 
-        let breakfast = PartialFood {
+        let breakfast = AddFoodRequest {
             name: "scrambled eggs".into(),
             calories: calories_for_the_day / 4 + 100,
             time: (day_start + chrono::Duration::hours(7)).to_rfc2822(),
         };
 
-        let lunch = PartialFood {
+        let lunch = AddFoodRequest {
             name: "grilled chicken".into(),
             calories: calories_for_the_day / 2,
             time: (day_start + chrono::Duration::hours(12)).to_rfc2822(),
         };
 
-        let dinner = PartialFood {
+        let dinner = AddFoodRequest {
             name: "slice of pizza".into(),
             calories: calories_for_the_day / 4 - 100,
             time: (day_start + chrono::Duration::hours(18)).to_rfc2822(),
@@ -43,16 +43,10 @@ fn create_food_for_the_last_n_days(days: i64) -> Vec<PartialFood> {
 pub async fn add_foods(
     api_client: &mut diet::ApiClient,
     access_token: String,
-    foods: &[PartialFood],
+    foods: &[AddFoodRequest],
 ) {
     for food in foods.iter() {
-        api_client
-            .add_food(&diet::api::food::messages::AddFoodRequest {
-                access_token: access_token.clone(),
-                food: food.clone(),
-            })
-            .await
-            .unwrap();
+        api_client.add_food(&access_token, &food).await.unwrap();
     }
 }
 
