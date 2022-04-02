@@ -88,7 +88,7 @@ impl ApiClient {
         self.json_request::<GetFoodListRequest, GetFoodListResponse>(
             hyper::Method::GET,
             req,
-            "/status",
+            "/food",
         )
         .await
     }

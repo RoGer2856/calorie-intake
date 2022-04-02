@@ -1,10 +1,12 @@
 pub mod messages {
-    pub type Food = crate::services::PartialFood;
+    pub type PartialFood = crate::services::PartialFood;
+    
+    pub type Food = crate::services::Food;
 
     #[derive(serde::Serialize, serde::Deserialize)]
     pub struct AddFoodRequest {
         pub access_token: String,
-        pub food: Food,
+        pub food: PartialFood,
     }
 
     #[derive(serde::Serialize, serde::Deserialize)]
@@ -43,7 +45,9 @@ pub async fn add_food(
         .lock()
         .await
         .get_food_storage_for_user(authz_info.username);
-    let id = food_storage.lock().await.add_food(payload.food)?;
+    let mut food_storage = food_storage.lock().await;
+
+    let id = food_storage.add_food(payload.food)?;
 
     let resp_msg = messages::AddFoodResponse { id: id.0 };
 
@@ -54,11 +58,33 @@ pub async fn add_food(
 }
 
 pub async fn get_food_list(
-    _req: hyper::Request<hyper::Body>,
-    _app_context: crate::AppContext,
+    req: hyper::Request<hyper::Body>,
+    app_context: crate::AppContext,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
+    let mut deserializer = crate::hyper_helpers::response::Deserializer::new();
+    let payload = deserializer
+        .read_request_as_json::<messages::GetFoodListRequest>(req)
+        .await?;
+
+    let authz_info = app_context
+        .authorization
+        .lock()
+        .await
+        .verify_jwt(&payload.access_token)?;
+
+    let food_storage = app_context
+        .food_storage
+        .lock()
+        .await
+        .get_food_storage_for_user(authz_info.username);
+    let mut food_storage = food_storage.lock().await;
+
+    let resp_msg = messages::GetFoodListResponse {
+        foods: food_storage.iter_food()?.collect(),
+    };
+
     Ok(crate::hyper_helpers::response::create_json_response(
         hyper::StatusCode::OK,
-        &crate::hyper_helpers::EmptyMessage::new(),
+        &resp_msg,
     )?)
 }

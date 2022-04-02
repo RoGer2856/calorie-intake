@@ -26,7 +26,7 @@ pub async fn run_test_custom_timeout(
     timeout: tokio::time::Duration,
     test: impl std::future::Future<Output = ()>,
 ) {
-    env_logger::init();
+    let _ = env_logger::try_init();
 
     let start_time = std::time::Instant::now();
 

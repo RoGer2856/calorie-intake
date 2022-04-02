@@ -5,6 +5,7 @@ use crate::services::*;
 
 pub struct FoodStorageHelper {
     food_storage: Vec<(String, Arc<Mutex<Box<dyn FoodStorage>>>)>,
+    // food_storage: Vec<(String, Arc<Mutex<Box<dyn FoodStorage<Iter = dyn Iterator<Item = Food>>>>>)>,
 }
 
 #[derive(Clone)]

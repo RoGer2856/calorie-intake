@@ -1,12 +1,12 @@
 use crate::api::food::messages::*;
 
-pub fn food_array_contains_food(foods: &[Food], food: &Food) -> bool {
-    foods.iter().find(|item| **item == *food).is_some()
+pub fn food_array_contains_food(foods: &[Food], food: &PartialFood) -> bool {
+    foods.iter().find(|item| **item == Food::from_partial_food(item.id.clone(), food.clone())).is_some()
 }
 
-pub fn check_food_array_equality(foods0: &[Food], foods1: &[Food]) -> bool {
-    for food in foods0.iter() {
-        if !food_array_contains_food(foods1, food) {
+pub fn check_food_array_equality(expected: &[PartialFood], received: &[Food]) -> bool {
+    for food in expected.iter() {
+        if !food_array_contains_food(received, food) {
             return false;
         }
     }
@@ -14,22 +14,22 @@ pub fn check_food_array_equality(foods0: &[Food], foods1: &[Food]) -> bool {
     true
 }
 
-pub fn generate_example_foods() -> Vec<Food> {
+pub fn generate_example_foods() -> Vec<PartialFood> {
     let mut ret = Vec::new();
 
-    ret.push(Food {
+    ret.push(PartialFood {
         name: "Hamburger".into(),
         calorie: 600,
         time: "2022 March 2 8:0".into(),
     });
 
-    ret.push(Food {
+    ret.push(PartialFood {
         name: "Chicken".into(),
         calorie: 300,
         time: "2022 March 2 12:00".into(),
     });
 
-    ret.push(Food {
+    ret.push(PartialFood {
         name: "Scrambled eggs".into(),
         calorie: 400,
         time: "2022 March 2 18:00".into(),
@@ -38,7 +38,7 @@ pub fn generate_example_foods() -> Vec<Food> {
     ret
 }
 
-pub async fn add_foods(api_client: &mut crate::ApiClient, access_token: String, foods: &[Food]) {
+pub async fn add_foods(api_client: &mut crate::ApiClient, access_token: String, foods: &[PartialFood]) {
     for food in foods.iter() {
         api_client
             .add_food(&AddFoodRequest {
