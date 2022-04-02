@@ -15,7 +15,7 @@ For debug mode, run `cargo run --bin diet-server -- -h`
 For release mode, run `cargo run --bin diet-server --release -- -h`
 
 Examples
-* Set log level to debug and listen on [::1]:3001: `RUST_LOG=debug cargo run --bin diet-server -- --listener-address [::1]:3001`
+* Set log level to debug and listen on [::1]:3001: `RUST_LOG=debug cargo run --bin diet-server -- --listener-address [::1]:3001 -s test_resources/test_secrets.toml`
 
 ## Running **diet-jwt-manager**
 
