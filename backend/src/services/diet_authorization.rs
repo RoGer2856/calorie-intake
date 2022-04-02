@@ -76,9 +76,9 @@ impl DietAuthorization {
     pub fn new(secret_config_file: std::path::PathBuf) -> Result<Self, DietAuthorizationError> {
         let secret_config: SecretConfig = toml::from_str(
             &std::fs::read_to_string(&secret_config_file)
-                .log_error(|| log::error!("Could not read secret config file"))?,
+                .log_error(|| log::error!("Could not read secrets config file"))?,
         )
-        .log_error(|| log::error!("Could not parse secret config file"))?;
+        .log_error(|| log::error!("Could not parse secrets config file"))?;
 
         Ok(Self {
             jwt_manager: crate::utils::JwtManager::new(secret_config.secret_key)

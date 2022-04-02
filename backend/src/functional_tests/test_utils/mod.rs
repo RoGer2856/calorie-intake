@@ -1,15 +1,19 @@
+mod assert_food;
 mod runtime_config;
 
+pub use assert_food::*;
 pub use runtime_config::*;
 
 pub const TEST_TIMEOUT_MILLIS: u64 = 10000;
 
 pub async fn run_test(
     listener_address: std::net::SocketAddr,
+    secrets_file_location: std::path::PathBuf,
     test: impl std::future::Future<Output = ()>,
 ) {
     run_test_custom_timeout(
         listener_address,
+        secrets_file_location,
         tokio::time::Duration::from_millis(TEST_TIMEOUT_MILLIS),
         test,
     )
@@ -18,6 +22,7 @@ pub async fn run_test(
 
 pub async fn run_test_custom_timeout(
     listener_address: std::net::SocketAddr,
+    secrets_file_location: std::path::PathBuf,
     timeout: tokio::time::Duration,
     test: impl std::future::Future<Output = ()>,
 ) {
@@ -28,7 +33,10 @@ pub async fn run_test_custom_timeout(
 
     let start_time = std::time::Instant::now();
 
-    let config = Box::new(RuntimeConfig::new(listener_address.clone()));
+    let config = Box::new(RuntimeConfig::new(
+        listener_address.clone(),
+        secrets_file_location,
+    ));
     let application = crate::Application::spawn_start(config).await;
     assert!(wait_for_start(listener_address, timeout).await.is_ok());
 
