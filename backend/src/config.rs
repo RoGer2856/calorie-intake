@@ -1,4 +1,4 @@
-pub trait Config {
+pub trait Config: Send {
     fn get_listener_address(&self) -> std::net::SocketAddr;
     fn set_listener_address(&mut self, listener_address: std::net::SocketAddr);
     fn get_secrets_file_location(&self) -> &std::path::PathBuf;

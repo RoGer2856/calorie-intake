@@ -26,6 +26,7 @@ async fn no_food() {
                 })
                 .await
                 .unwrap();
+
             assert_eq!(0, resp.object.foods.len());
         },
     )

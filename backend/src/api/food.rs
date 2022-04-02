@@ -1,10 +1,5 @@
 pub mod messages {
-    #[derive(serde::Serialize, serde::Deserialize, PartialEq, Clone)]
-    pub struct Food {
-        pub name: String,
-        pub calorie: i16,
-        pub time: String,
-    }
+    pub type Food = crate::services::PartialFood;
 
     #[derive(serde::Serialize, serde::Deserialize)]
     pub struct AddFoodRequest {
