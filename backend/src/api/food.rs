@@ -1,6 +1,6 @@
 pub mod messages {
     pub type PartialFood = crate::services::PartialFood;
-    
+
     pub type Food = crate::services::Food;
 
     #[derive(serde::Serialize, serde::Deserialize)]

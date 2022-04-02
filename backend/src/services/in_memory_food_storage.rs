@@ -39,8 +39,12 @@ impl FoodStorage for InMemoryFoodStorage {
             .ok_or(FoodStorageError::ItemNotFound)
     }
 
-    fn iter_food<'a>(&'a mut self) -> Result<Box<dyn Iterator<Item = Food> + 'a>, FoodStorageError> {
-        Ok(Box::new(InMemoryFoodStorageIterator::new(self.foods.iter())))
+    fn iter_food<'a>(
+        &'a mut self,
+    ) -> Result<Box<dyn Iterator<Item = Food> + 'a>, FoodStorageError> {
+        Ok(Box::new(InMemoryFoodStorageIterator::new(
+            self.foods.iter(),
+        )))
     }
 }
 

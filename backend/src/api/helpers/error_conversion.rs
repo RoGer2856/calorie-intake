@@ -62,7 +62,9 @@ impl From<FoodStorageError> for ErrorResponse {
 
                 msg.to_response(hyper::StatusCode::NOT_FOUND)
             }
-            FoodStorageError::InternalError => ErrorResponse::from_status_code(hyper::StatusCode::INTERNAL_SERVER_ERROR),
+            FoodStorageError::InternalError => {
+                ErrorResponse::from_status_code(hyper::StatusCode::INTERNAL_SERVER_ERROR)
+            }
         }
     }
 }

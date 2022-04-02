@@ -1,7 +1,10 @@
 use crate::api::food::messages::*;
 
 pub fn food_array_contains_food(foods: &[Food], food: &PartialFood) -> bool {
-    foods.iter().find(|item| **item == Food::from_partial_food(item.id.clone(), food.clone())).is_some()
+    foods
+        .iter()
+        .find(|item| **item == Food::from_partial_food(item.id.clone(), food.clone()))
+        .is_some()
 }
 
 pub fn check_food_array_equality(expected: &[PartialFood], received: &[Food]) -> bool {
@@ -38,7 +41,11 @@ pub fn generate_example_foods() -> Vec<PartialFood> {
     ret
 }
 
-pub async fn add_foods(api_client: &mut crate::ApiClient, access_token: String, foods: &[PartialFood]) {
+pub async fn add_foods(
+    api_client: &mut crate::ApiClient,
+    access_token: String,
+    foods: &[PartialFood],
+) {
     for food in foods.iter() {
         api_client
             .add_food(&AddFoodRequest {
