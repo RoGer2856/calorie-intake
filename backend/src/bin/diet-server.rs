@@ -10,7 +10,7 @@ fn create_food_for_the_last_n_days(days: i64) -> Vec<AddFoodRequest> {
 
     for i in 0..days {
         let mut calories_for_the_day = rand::random::<u16>() % 1000;
-        calories_for_the_day += 600;
+        calories_for_the_day += 1600;
 
         let day_start = day_start - chrono::Duration::days(days - i);
 
