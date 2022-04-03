@@ -1,7 +1,7 @@
 import { ReactElement, useCallback, useEffect, useState } from 'react';
-import AdminApp from './components/AdminApp';
+import AdminApp from './components/admin/AdminApp';
 import Loading from './components/Loading';
-import RegularUserApp from './components/RegularUserApp';
+import RegularUserApp from './components/regular_user/RegularUserApp';
 import useApi from './hooks/use-api';
 import { IUserInfo, Role } from './model/UserInfo';
 
@@ -26,11 +26,11 @@ function App() {
       {userInfo !== null
         ?
         <>
-          {userInfo!.role === Role.RegularUser
+          {userInfo.role === Role.RegularUser
             ?
-            <RegularUserApp />
+            <RegularUserApp userInfo={userInfo} />
             :
-            <AdminApp />
+            <AdminApp userInfo={userInfo} />
           }
         </>
         :
