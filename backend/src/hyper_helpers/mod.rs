@@ -1,8 +1,7 @@
-mod empty_message;
 mod error_response;
-pub mod response;
+mod message;
 mod server;
 
-pub use empty_message::*;
 pub use error_response::*;
+pub use message::*;
 pub use server::*;

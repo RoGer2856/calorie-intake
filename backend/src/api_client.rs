@@ -3,7 +3,7 @@ use crate::api::userinfo::messages::*;
 
 pub struct ApiClient {
     base_url: String,
-    deserializer: crate::hyper_helpers::response::Deserializer,
+    deserializer: crate::hyper_helpers::Deserializer,
 }
 
 #[derive(Debug)]
@@ -12,7 +12,7 @@ pub enum ApiClientError {
     SerdeJson(serde_json::Error),
     InvalidUri(http::uri::InvalidUri),
     Http(http::Error),
-    Deserialization(crate::hyper_helpers::response::DeserializeJsonResponseError),
+    Deserialization(crate::hyper_helpers::DeserializeJsonResponseError),
 }
 
 #[derive(Debug)]
@@ -45,8 +45,8 @@ impl From<http::Error> for RequestError {
     }
 }
 
-impl From<crate::hyper_helpers::response::DeserializeJsonResponseError> for RequestError {
-    fn from(e: crate::hyper_helpers::response::DeserializeJsonResponseError) -> Self {
+impl From<crate::hyper_helpers::DeserializeJsonResponseError> for RequestError {
+    fn from(e: crate::hyper_helpers::DeserializeJsonResponseError) -> Self {
         Self::ApiClientError(ApiClientError::Deserialization(e))
     }
 }
@@ -58,23 +58,23 @@ pub struct StructResponse<T> {
     pub object: T,
 }
 
+#[derive(Debug)]
+pub struct NoBodyResponse {
+    pub status: hyper::StatusCode,
+    pub headers: hyper::HeaderMap,
+}
+
 impl ApiClient {
     pub fn new(base_url: &str) -> Self {
         Self {
             base_url: base_url.to_string(),
-            deserializer: crate::hyper_helpers::response::Deserializer::new(),
+            deserializer: crate::hyper_helpers::Deserializer::new(),
         }
     }
 
-    pub async fn get_status(
-        &mut self,
-    ) -> Result<StructResponse<crate::hyper_helpers::EmptyMessage>, RequestError> {
-        self.json_request::<crate::hyper_helpers::EmptyMessage, crate::hyper_helpers::EmptyMessage>(
-            hyper::Method::GET,
-            &crate::hyper_helpers::EmptyMessage,
-            "/status",
-        )
-        .await
+    pub async fn get_status(&mut self) -> Result<NoBodyResponse, RequestError> {
+        self.empty_request_with_no_response_body(hyper::Method::GET, "/status")
+            .await
     }
 
     pub async fn add_food(
@@ -94,9 +94,8 @@ impl ApiClient {
         &mut self,
         access_token: &str,
     ) -> Result<StructResponse<GetFoodListResponse>, RequestError> {
-        self.json_request::<crate::hyper_helpers::EmptyMessage, GetFoodListResponse>(
+        self.empty_request_with_json_response::<GetFoodListResponse>(
             hyper::Method::GET,
-            &crate::hyper_helpers::EmptyMessage,
             &("/food?access_token=".to_string() + &access_token),
         )
         .await
@@ -107,9 +106,8 @@ impl ApiClient {
         access_token: &str,
         id: &str,
     ) -> Result<StructResponse<GetFoodByIdResponse>, RequestError> {
-        self.json_request::<GetFoodByIdRequest, GetFoodByIdResponse>(
+        self.empty_request_with_json_response::<GetFoodByIdResponse>(
             hyper::Method::GET,
-            &crate::hyper_helpers::EmptyMessage,
             &("/food/".to_string() + id + "?access_token=" + &access_token),
         )
         .await
@@ -119,10 +117,9 @@ impl ApiClient {
         &mut self,
         access_token: &str,
         id: &str,
-    ) -> Result<StructResponse<DeleteFoodByIdResponse>, RequestError> {
-        self.json_request::<DeleteFoodByIdRequest, DeleteFoodByIdResponse>(
+    ) -> Result<NoBodyResponse, RequestError> {
+        self.empty_request_with_no_response_body(
             hyper::Method::DELETE,
-            &crate::hyper_helpers::EmptyMessage,
             &("/food/".to_string() + id + "?access_token=" + &access_token),
         )
         .await
@@ -132,12 +129,116 @@ impl ApiClient {
         &mut self,
         access_token: &str,
     ) -> Result<StructResponse<GetUserInfoResponse>, RequestError> {
-        self.json_request::<GetUserInfoRequest, GetUserInfoResponse>(
+        self.empty_request_with_json_response::<GetUserInfoResponse>(
             hyper::Method::GET,
-            &crate::hyper_helpers::EmptyMessage,
             &("/userinfo?access_token=".to_string() + &access_token),
         )
         .await
+    }
+
+    async fn empty_request_with_no_response_body(
+        &mut self,
+        method: hyper::Method,
+        request_url: &str,
+    ) -> Result<NoBodyResponse, RequestError> {
+        let client = hyper::client::Client::new();
+
+        let request = crate::hyper_helpers::empty_request_from_method(
+            method,
+            self.create_uri(request_url).unwrap(),
+        );
+
+        let response = client.request(request).await?;
+
+        if response.status() == hyper::StatusCode::OK {
+            Ok(NoBodyResponse {
+                status: response.status(),
+                headers: response.headers().clone(),
+            })
+        } else {
+            Err(RequestError::ClientOrServerError(StructResponse {
+                status: response.status(),
+                headers: response.headers().clone(),
+                object: self
+                    .deserializer
+                    .read_response_as_json::<crate::api::helpers::ErrorMessage<String>>(response)
+                    .await?,
+            }))
+        }
+    }
+
+    async fn json_request_with_no_response_body<T: serde::Serialize>(
+        &mut self,
+        method: hyper::Method,
+        data: &T,
+        request_url: &str,
+    ) -> Result<NoBodyResponse, RequestError> {
+        let client = hyper::client::Client::new();
+
+        let request = if method == hyper::Method::GET || method == hyper::Method::HEAD {
+            hyper::Request::builder()
+                .method(method)
+                .uri(self.create_uri(request_url)?)
+                .body(hyper::Body::empty())?
+        } else {
+            hyper::Request::builder()
+                .method(method)
+                .uri(self.create_uri(request_url)?)
+                .body(hyper::Body::from(serde_json::to_string(data)?))?
+        };
+
+        let response = client.request(request).await?;
+
+        if response.status() == hyper::StatusCode::OK {
+            Ok(NoBodyResponse {
+                status: response.status(),
+                headers: response.headers().clone(),
+            })
+        } else {
+            Err(RequestError::ClientOrServerError(StructResponse {
+                status: response.status(),
+                headers: response.headers().clone(),
+                object: self
+                    .deserializer
+                    .read_response_as_json::<crate::api::helpers::ErrorMessage<String>>(response)
+                    .await?,
+            }))
+        }
+    }
+
+    async fn empty_request_with_json_response<'a, R: serde::Deserialize<'a>>(
+        &'a mut self,
+        method: hyper::Method,
+        request_url: &str,
+    ) -> Result<StructResponse<R>, RequestError> {
+        let client = hyper::client::Client::new();
+
+        let request = crate::hyper_helpers::empty_request_from_method(
+            method,
+            self.create_uri(request_url).unwrap(),
+        );
+
+        let response = client.request(request).await?;
+
+        if response.status() == hyper::StatusCode::OK {
+            Ok(StructResponse {
+                status: response.status(),
+                headers: response.headers().clone(),
+                object: self
+                    .deserializer
+                    .read_response_as_json::<R>(response)
+                    .await?,
+            })
+        } else {
+            Err(RequestError::ClientOrServerError(StructResponse {
+                status: response.status(),
+                headers: response.headers().clone(),
+                object: self
+                    .deserializer
+                    .read_response_as_json::<crate::api::helpers::ErrorMessage<String>>(response)
+                    .await?,
+            }))
+        }
     }
 
     async fn json_request<'a, T: serde::Serialize, R: serde::Deserialize<'a>>(

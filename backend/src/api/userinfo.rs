@@ -1,6 +1,4 @@
 pub mod messages {
-    pub type GetUserInfoRequest = crate::hyper_helpers::EmptyMessage;
-
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct GetUserInfoResponse {
         pub username: String,
@@ -26,7 +24,7 @@ pub async fn get_userinfo(
         role: authz_info.role.to_string(),
     };
 
-    Ok(crate::hyper_helpers::response::create_json_response(
+    Ok(crate::hyper_helpers::create_json_response(
         hyper::StatusCode::OK,
         &resp_msg,
     )?)

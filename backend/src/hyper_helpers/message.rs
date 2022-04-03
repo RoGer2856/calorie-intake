@@ -1,13 +1,23 @@
-pub fn ok() -> hyper::Response<hyper::Body> {
+pub fn response_ok() -> hyper::Response<hyper::Body> {
     let mut response = hyper::Response::default();
     *response.status_mut() = hyper::StatusCode::OK;
     response
 }
 
-pub fn from_status_code(status_code: hyper::StatusCode) -> hyper::Response<hyper::Body> {
+pub fn response_from_status_code(status_code: hyper::StatusCode) -> hyper::Response<hyper::Body> {
     let mut response = hyper::Response::default();
     *response.status_mut() = status_code;
     response
+}
+
+pub fn empty_request_from_method(
+    method: hyper::Method,
+    uri: hyper::Uri,
+) -> hyper::Request<hyper::Body> {
+    let mut request = hyper::Request::default();
+    *request.method_mut() = method;
+    *request.uri_mut() = uri;
+    request
 }
 
 #[derive(Debug)]

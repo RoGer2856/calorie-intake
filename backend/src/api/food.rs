@@ -15,11 +15,7 @@ pub mod messages {
         pub foods: Vec<Food>,
     }
 
-    pub type GetFoodByIdRequest = crate::hyper_helpers::EmptyMessage;
     pub type GetFoodByIdResponse = crate::services::Food;
-
-    pub type DeleteFoodByIdRequest = crate::hyper_helpers::EmptyMessage;
-    pub type DeleteFoodByIdResponse = crate::hyper_helpers::EmptyMessage;
 }
 
 pub async fn add_food(
@@ -35,7 +31,7 @@ pub async fn add_food(
         .await
         .verify_jwt(&access_token)?;
 
-    let mut deserializer = crate::hyper_helpers::response::Deserializer::new();
+    let mut deserializer = crate::hyper_helpers::Deserializer::new();
     let payload = deserializer
         .read_request_as_json::<messages::AddFoodRequest>(req)
         .await?;
@@ -51,7 +47,7 @@ pub async fn add_food(
 
     let resp_msg = messages::AddFoodResponse { id: id.0 };
 
-    Ok(crate::hyper_helpers::response::create_json_response(
+    Ok(crate::hyper_helpers::create_json_response(
         hyper::StatusCode::OK,
         &resp_msg,
     )?)
@@ -80,7 +76,7 @@ pub async fn get_food_list(
                 foods.append(&mut user_food_storage.iter_food()?.collect());
             }
 
-            Ok(crate::hyper_helpers::response::create_json_response(
+            Ok(crate::hyper_helpers::create_json_response(
                 hyper::StatusCode::OK,
                 &messages::GetFoodListResponse { foods },
             )?)
@@ -93,7 +89,7 @@ pub async fn get_food_list(
                 foods: food_storage.iter_food()?.collect(),
             };
 
-            Ok(crate::hyper_helpers::response::create_json_response(
+            Ok(crate::hyper_helpers::create_json_response(
                 hyper::StatusCode::OK,
                 &resp,
             )?)
@@ -123,7 +119,7 @@ pub async fn get_food(
         RoleType::Admin => {
             for (_username, user_food_storage) in food_storage.user_storages_iter() {
                 if let Ok(food) = user_food_storage.lock().await.get_food(&food_id) {
-                    return Ok(crate::hyper_helpers::response::create_json_response(
+                    return Ok(crate::hyper_helpers::create_json_response(
                         hyper::StatusCode::OK,
                         &food,
                     )?);
@@ -135,7 +131,7 @@ pub async fn get_food(
         RoleType::RegularUser => {
             let food_storage = food_storage.get_food_storage_for_user(authz_info.username);
             let mut food_storage = food_storage.lock().await;
-            Ok(crate::hyper_helpers::response::create_json_response(
+            Ok(crate::hyper_helpers::create_json_response(
                 hyper::StatusCode::OK,
                 &food_storage.get_food(&food_id)?,
             )?)
@@ -165,7 +161,7 @@ pub async fn delete_food(
         RoleType::Admin => {
             for (_username, user_food_storage) in food_storage.user_storages_iter() {
                 if let Ok(_food) = user_food_storage.lock().await.delete_food(&food_id) {
-                    return Ok(crate::hyper_helpers::response::ok());
+                    return Ok(crate::hyper_helpers::response_ok());
                 }
             }
 
@@ -175,7 +171,7 @@ pub async fn delete_food(
             let food_storage = food_storage.get_food_storage_for_user(authz_info.username);
             let mut food_storage = food_storage.lock().await;
             food_storage.delete_food(&food_id)?;
-            Ok(crate::hyper_helpers::response::ok())
+            Ok(crate::hyper_helpers::response_ok())
         }
     }
 }

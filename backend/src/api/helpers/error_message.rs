@@ -8,9 +8,9 @@ where
     T: serde::Serialize,
 {
     pub fn to_response(self, status: hyper::StatusCode) -> crate::hyper_helpers::ErrorResponse {
-        let response = match crate::hyper_helpers::response::create_json_response(status, &self) {
+        let response = match crate::hyper_helpers::create_json_response(status, &self) {
             Ok(response) => response,
-            Err(_) => crate::hyper_helpers::response::from_status_code(
+            Err(_) => crate::hyper_helpers::response_from_status_code(
                 hyper::StatusCode::INTERNAL_SERVER_ERROR,
             ),
         };

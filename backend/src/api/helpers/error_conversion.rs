@@ -1,5 +1,5 @@
 use super::ErrorMessage;
-use crate::hyper_helpers::response::DeserializeJsonRequestError;
+use crate::hyper_helpers::DeserializeJsonRequestError;
 use crate::hyper_helpers::ErrorResponse;
 use crate::services::*;
 use crate::utils::*;
