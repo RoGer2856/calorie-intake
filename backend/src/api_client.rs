@@ -14,36 +14,43 @@ pub enum ApiClientError {
     Deserialization(crate::hyper_helpers::response::DeserializeJsonResponseError),
 }
 
-impl From<hyper::Error> for ApiClientError {
+#[derive(Debug)]
+pub enum RequestError {
+    ApiClientError(ApiClientError),
+    ClientOrServerError(StructResponse<crate::api::helpers::ErrorMessage<String>>),
+}
+
+impl From<hyper::Error> for RequestError {
     fn from(e: hyper::Error) -> Self {
-        Self::Hyper(e)
+        Self::ApiClientError(ApiClientError::Hyper(e))
     }
 }
 
-impl From<serde_json::Error> for ApiClientError {
+impl From<serde_json::Error> for RequestError {
     fn from(e: serde_json::Error) -> Self {
-        Self::SerdeJson(e)
+        Self::ApiClientError(ApiClientError::SerdeJson(e))
     }
 }
 
-impl From<http::uri::InvalidUri> for ApiClientError {
+impl From<http::uri::InvalidUri> for RequestError {
     fn from(e: http::uri::InvalidUri) -> Self {
-        Self::InvalidUri(e)
+        Self::ApiClientError(ApiClientError::InvalidUri(e))
     }
 }
 
-impl From<http::Error> for ApiClientError {
+impl From<http::Error> for RequestError {
     fn from(e: http::Error) -> Self {
-        Self::Http(e)
+        Self::ApiClientError(ApiClientError::Http(e))
     }
 }
 
-impl From<crate::hyper_helpers::response::DeserializeJsonResponseError> for ApiClientError {
+impl From<crate::hyper_helpers::response::DeserializeJsonResponseError> for RequestError {
     fn from(e: crate::hyper_helpers::response::DeserializeJsonResponseError) -> Self {
-        Self::Deserialization(e)
+        Self::ApiClientError(ApiClientError::Deserialization(e))
     }
 }
 
+#[derive(Debug)]
 pub struct StructResponse<T> {
     pub status: hyper::StatusCode,
     pub headers: hyper::HeaderMap,
@@ -60,7 +67,7 @@ impl ApiClient {
 
     pub async fn get_status(
         &mut self,
-    ) -> Result<StructResponse<crate::hyper_helpers::EmptyMessage>, ApiClientError> {
+    ) -> Result<StructResponse<crate::hyper_helpers::EmptyMessage>, RequestError> {
         self.json_request::<crate::hyper_helpers::EmptyMessage, crate::hyper_helpers::EmptyMessage>(
             hyper::Method::GET,
             &crate::hyper_helpers::EmptyMessage,
@@ -73,7 +80,7 @@ impl ApiClient {
         &mut self,
         access_token: &str,
         food_request: &AddFoodRequest,
-    ) -> Result<StructResponse<AddFoodResponse>, ApiClientError> {
+    ) -> Result<StructResponse<AddFoodResponse>, RequestError> {
         self.json_request::<AddFoodRequest, AddFoodResponse>(
             hyper::Method::POST,
             &food_request,
@@ -85,7 +92,7 @@ impl ApiClient {
     pub async fn get_food_list(
         &mut self,
         access_token: &str,
-    ) -> Result<StructResponse<GetFoodListResponse>, ApiClientError> {
+    ) -> Result<StructResponse<GetFoodListResponse>, RequestError> {
         self.json_request::<crate::hyper_helpers::EmptyMessage, GetFoodListResponse>(
             hyper::Method::GET,
             &crate::hyper_helpers::EmptyMessage,
@@ -99,7 +106,7 @@ impl ApiClient {
         method: hyper::Method,
         data: &T,
         request_url: &str,
-    ) -> Result<StructResponse<R>, ApiClientError> {
+    ) -> Result<StructResponse<R>, RequestError> {
         let client = hyper::client::Client::new();
 
         let request = if method == hyper::Method::GET || method == hyper::Method::HEAD {
@@ -116,14 +123,25 @@ impl ApiClient {
 
         let response = client.request(request).await?;
 
-        Ok(StructResponse {
-            status: response.status(),
-            headers: response.headers().clone(),
-            object: self
-                .deserializer
-                .read_response_as_json::<R>(response)
-                .await?,
-        })
+        if response.status() == hyper::StatusCode::OK {
+            Ok(StructResponse {
+                status: response.status(),
+                headers: response.headers().clone(),
+                object: self
+                    .deserializer
+                    .read_response_as_json::<R>(response)
+                    .await?,
+            })
+        } else {
+            Err(RequestError::ClientOrServerError(StructResponse {
+                status: response.status(),
+                headers: response.headers().clone(),
+                object: self
+                    .deserializer
+                    .read_response_as_json::<crate::api::helpers::ErrorMessage<String>>(response)
+                    .await?,
+            }))
+        }
     }
 
     fn create_uri(&mut self, request_url: &str) -> Result<hyper::Uri, http::uri::InvalidUri> {
