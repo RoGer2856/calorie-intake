@@ -3,6 +3,7 @@ pub mod messages {
     pub struct GetUserInfoResponse {
         pub username: String,
         pub role: String,
+        pub max_calories_per_day: u16,
     }
 }
 
@@ -22,6 +23,7 @@ pub async fn get_userinfo(
     let resp_msg = messages::GetUserInfoResponse {
         username: authz_info.username,
         role: authz_info.role.to_string(),
+        max_calories_per_day: authz_info.max_calories_per_day,
     };
 
     Ok(crate::hyper_helpers::create_json_response(

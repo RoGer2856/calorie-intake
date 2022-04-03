@@ -48,6 +48,7 @@ async fn get_admin_user_info() {
 
             let username = "admin";
             let role = RoleType::Admin;
+            let max_calories_per_day = 2100;
 
             let access_token = authorization
                 .create_jwt(username.into(), role.clone(), 2100)
@@ -57,6 +58,7 @@ async fn get_admin_user_info() {
 
             assert_eq!(resp.object.username, username);
             assert_eq!(resp.object.role, role.to_string());
+            assert_eq!(resp.object.max_calories_per_day, max_calories_per_day);
         },
     )
     .await;
