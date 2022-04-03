@@ -67,21 +67,35 @@ pub async fn get_food_list(
         .await
         .verify_jwt(&access_token)?;
 
-    let food_storage = app_context
-        .food_storage
-        .lock()
-        .await
-        .get_food_storage_for_user(authz_info.username);
-    let mut food_storage = food_storage.lock().await;
+    let mut food_storage = app_context.food_storage.lock().await;
 
-    let resp_msg = messages::GetFoodListResponse {
-        foods: food_storage.iter_food()?.collect(),
-    };
+    match authz_info.role {
+        RoleType::Admin => {
+            let mut foods = Vec::<crate::services::Food>::new();
+            for (_username, user_food_storage) in food_storage.user_storages_iter() {
+                let mut user_food_storage = user_food_storage.lock().await;
+                foods.append(&mut user_food_storage.iter_food()?.collect());
+            }
 
-    Ok(crate::hyper_helpers::response::create_json_response(
-        hyper::StatusCode::OK,
-        &resp_msg,
-    )?)
+            Ok(crate::hyper_helpers::response::create_json_response(
+                hyper::StatusCode::OK,
+                &messages::GetFoodListResponse { foods },
+            )?)
+        }
+        RoleType::RegularUser => {
+            let food_storage = food_storage.get_food_storage_for_user(authz_info.username);
+            let mut food_storage = food_storage.lock().await;
+
+            let resp = messages::GetFoodListResponse {
+                foods: food_storage.iter_food()?.collect(),
+            };
+
+            Ok(crate::hyper_helpers::response::create_json_response(
+                hyper::StatusCode::OK,
+                &resp,
+            )?)
+        }
+    }
 }
 
 pub async fn get_food(
