@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ReactElement } from "react";
 import useApi from '../hooks/use-api';
 import { IGetFoodListResponse } from '../messages/Food';
-import { AllFoods, YearFoods } from '../model/GroupedFood';
+import { AllFoods, YearFoods } from '../model/Foods';
 import AddFoodForm from './AddFoodForm';
 import YearFoodsView from './YearFoodsView';
 

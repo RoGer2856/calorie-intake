@@ -1,5 +1,6 @@
 import { ReactElement } from "react";
-import { DayFoods } from "../model/GroupedFood";
+import { DayFoods } from "../model/Foods";
+import { monthIndexToMonthName } from "../utils/time";
 import DayFoodsView from "./DayFoodsView";
 import styles from "./MonthFoodsView.module.css"
 
@@ -10,11 +11,16 @@ export default function MonthFoodsView(props: {
     return (
         <>
             <div className={styles.frame.toString()}>
-                <h1>Month: {props.month}</h1>
+                <h1>{monthIndexToMonthName(props.month)}</h1>
                 <div className={styles.container.toString()}>
                     {props.foods.map((day: DayFoods) => {
                         return (
-                            <DayFoodsView key={day.dateOfMonth} dateOfMonth={day.dateOfMonth} foods={day.foods} />
+                            <DayFoodsView
+                                key={day.dateOfMonth}
+                                month={props.month}
+                                dateOfMonth={day.dateOfMonth}
+                                dayOfTheWeek={day.dayOfTheWeek}
+                                foods={day.foods} />
                         );
                     })}
 
