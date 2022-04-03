@@ -52,7 +52,9 @@ export default function useApi(): UseApiHandler {
       let ret: IUserInfo = {
         username: data.username,
         role,
+        maxCaloriesPerDay: data.max_calories_per_day,
       };
+
       return ret;
     } else {
       setIsLoading(false);

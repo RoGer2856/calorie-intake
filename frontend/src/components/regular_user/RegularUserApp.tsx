@@ -13,7 +13,10 @@ export default function RegularUserApp(props: {
             <RegularUserLayout userInfo={props.userInfo}>
                 <Routes>
                     <Route path="/">
-                        <Route index element={<MyFoods />} />
+                        <Route index element={
+                            <MyFoods
+                                maxCaloriesPerDay={props.userInfo.maxCaloriesPerDay} />
+                        } />
                     </Route>
                     <Route path="*" element={<PageNotFound />} />
                 </Routes>

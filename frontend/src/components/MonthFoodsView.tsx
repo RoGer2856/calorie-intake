@@ -5,6 +5,7 @@ import DayFoodsView from "./DayFoodsView";
 import styles from "./MonthFoodsView.module.css"
 
 export default function MonthFoodsView(props: {
+    maxCaloriesPerDay: number,
     month: number,
     foods: DayFoods[],
 }): ReactElement {
@@ -17,6 +18,7 @@ export default function MonthFoodsView(props: {
                         return (
                             <DayFoodsView
                                 key={day.dateOfMonth}
+                                maxCaloriesPerDay={props.maxCaloriesPerDay}
                                 month={props.month}
                                 dateOfMonth={day.dateOfMonth}
                                 dayOfTheWeek={day.dayOfTheWeek}

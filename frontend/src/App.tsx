@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import AdminApp from './components/admin/AdminApp';
 import Loading from './components/Loading';
 import RegularUserApp from './components/regular_user/RegularUserApp';

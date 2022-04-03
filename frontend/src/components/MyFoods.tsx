@@ -6,7 +6,9 @@ import { AllFoods, YearFoods } from '../model/Foods';
 import AddFoodForm from './AddFoodForm';
 import YearFoodsView from './YearFoodsView';
 
-export default function (): ReactElement {
+export default function MyFoods(props: {
+    maxCaloriesPerDay: number,
+}): ReactElement {
     const api = useApi();
 
     const [allFoods, setAllFoods] = useState<AllFoods>(new AllFoods());
@@ -40,6 +42,7 @@ export default function (): ReactElement {
                     return (
                         <YearFoodsView
                             key={year.year}
+                            maxCaloriesPerDay={props.maxCaloriesPerDay}
                             year={year.year}
                             foods={year.toSortedArray()}
                         />

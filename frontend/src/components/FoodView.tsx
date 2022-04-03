@@ -10,7 +10,7 @@ export default function FoodView(props: {
         <>
             <div className={styles.container.toString()}>
                 <p>{props.food.name}</p>
-                <p>{props.food.calories}</p>
+                <p>{props.food.calories} kcal</p>
                 <p>{dt.toLocaleString()}</p>
             </div>
         </>

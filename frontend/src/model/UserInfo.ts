@@ -6,4 +6,5 @@ export enum Role {
 export interface IUserInfo {
     username: string,
     role: Role,
+    maxCaloriesPerDay: number,
 }

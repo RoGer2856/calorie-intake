@@ -4,6 +4,7 @@ import styles from "./YearFoodsView.module.css"
 import MonthFoodsView from "./MonthFoodsView";
 
 export default function YearFoodsView(props: {
+    maxCaloriesPerDay: number,
     year: number,
     foods: MonthFoods[],
 }): ReactElement {
@@ -13,7 +14,11 @@ export default function YearFoodsView(props: {
                 <h1>Year: {props.year}</h1>
                 {props.foods.map((month: MonthFoods) => {
                     return (
-                        <MonthFoodsView key={month.month} month={month.month} foods={month.toSortedArray()} />
+                        <MonthFoodsView
+                            maxCaloriesPerDay={props.maxCaloriesPerDay}
+                            key={month.month}
+                            month={month.month}
+                            foods={month.toSortedArray()} />
                     );
                 })}
 
