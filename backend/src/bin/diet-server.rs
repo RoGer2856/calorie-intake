@@ -15,21 +15,24 @@ fn create_food_for_the_last_n_days(days: i64) -> Vec<AddFoodRequest> {
         let day_start = day_start - chrono::Duration::days(days - i);
 
         let breakfast = AddFoodRequest {
-            name: "scrambled eggs".into(),
-            calories: calories_for_the_day / 4 + 100,
-            time: (day_start + chrono::Duration::hours(7)).to_rfc2822(),
+            id: None,
+            name: Some("scrambled eggs".into()),
+            calories: Some(calories_for_the_day / 4 + 100),
+            time: Some((day_start + chrono::Duration::hours(7)).to_rfc2822()),
         };
 
         let lunch = AddFoodRequest {
-            name: "grilled chicken".into(),
-            calories: calories_for_the_day / 2,
-            time: (day_start + chrono::Duration::hours(12)).to_rfc2822(),
+            id: None,
+            name: Some("grilled chicken".into()),
+            calories: Some(calories_for_the_day / 2),
+            time: Some((day_start + chrono::Duration::hours(12)).to_rfc2822()),
         };
 
         let dinner = AddFoodRequest {
-            name: "slice of pizza".into(),
-            calories: calories_for_the_day / 4 - 100,
-            time: (day_start + chrono::Duration::hours(18)).to_rfc2822(),
+            id: None,
+            name: Some("slice of pizza".into()),
+            calories: Some(calories_for_the_day / 4 - 100),
+            time: Some((day_start + chrono::Duration::hours(18)).to_rfc2822()),
         };
 
         ret.push(breakfast);

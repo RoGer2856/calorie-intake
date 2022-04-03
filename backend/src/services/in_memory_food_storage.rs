@@ -27,7 +27,7 @@ impl FoodStorage for InMemoryFoodStorage {
     fn add_food(&mut self, partial_food: PartialFood) -> Result<FoodId, FoodStorageError> {
         let id = self.generate_id();
         let food = Food::from_partial_food(id.clone(), partial_food);
-        self.foods.push(food);
+        self.foods.push(food?);
 
         Ok(id)
     }
@@ -78,21 +78,24 @@ mod test {
     #[test]
     fn get_food_by_id() {
         let partial_food0 = PartialFood {
-            name: "Hamburger".into(),
-            calories: 600,
-            time: "2022 March 2 8:0".into(),
+            id: None,
+            name: Some("Hamburger".into()),
+            calories: Some(600),
+            time: Some("2022 March 2 8:0".into()),
         };
 
         let partial_food1 = PartialFood {
-            name: "Chicken".into(),
-            calories: 300,
-            time: "2022 March 2 12:00".into(),
+            id: None,
+            name: Some("Chicken".into()),
+            calories: Some(300),
+            time: Some("2022 March 2 12:00".into()),
         };
 
         let partial_food2 = PartialFood {
-            name: "Scrambled eggs".into(),
-            calories: 400,
-            time: "2022 March 2 18:00".into(),
+            id: None,
+            name: Some("Scrambled eggs".into()),
+            calories: Some(400),
+            time: Some("2022 March 2 18:00".into()),
         };
 
         let mut food_storage = InMemoryFoodStorage::new();
@@ -101,15 +104,15 @@ mod test {
         let id2 = food_storage.add_food(partial_food2.clone()).unwrap();
 
         assert_eq!(
-            Food::from_partial_food(id0.clone(), partial_food0),
+            Food::from_partial_food(id0.clone(), partial_food0).unwrap(),
             *food_storage.get_food(&id0).unwrap()
         );
         assert_eq!(
-            Food::from_partial_food(id1.clone(), partial_food1),
+            Food::from_partial_food(id1.clone(), partial_food1).unwrap(),
             *food_storage.get_food(&id1).unwrap()
         );
         assert_eq!(
-            Food::from_partial_food(id2.clone(), partial_food2),
+            Food::from_partial_food(id2.clone(), partial_food2).unwrap(),
             *food_storage.get_food(&id2).unwrap()
         );
     }
@@ -126,21 +129,24 @@ mod test {
     #[test]
     fn delete_food_by_id() {
         let partial_food0 = PartialFood {
-            name: "Hamburger".into(),
-            calories: 600,
-            time: "2022 March 2 8:0".into(),
+            id: None,
+            name: Some("Hamburger".into()),
+            calories: Some(600),
+            time: Some("2022 March 2 8:0".into()),
         };
 
         let partial_food1 = PartialFood {
-            name: "Chicken".into(),
-            calories: 300,
-            time: "2022 March 2 12:00".into(),
+            id: None,
+            name: Some("Chicken".into()),
+            calories: Some(300),
+            time: Some("2022 March 2 12:00".into()),
         };
 
         let partial_food2 = PartialFood {
-            name: "Scrambled eggs".into(),
-            calories: 400,
-            time: "2022 March 2 18:00".into(),
+            id: None,
+            name: Some("Scrambled eggs".into()),
+            calories: Some(400),
+            time: Some("2022 March 2 18:00".into()),
         };
 
         let mut food_storage = InMemoryFoodStorage::new();
@@ -151,12 +157,12 @@ mod test {
         food_storage.delete_food(&id1).unwrap();
 
         assert_eq!(
-            Food::from_partial_food(id0.clone(), partial_food0),
+            Food::from_partial_food(id0.clone(), partial_food0).unwrap(),
             *food_storage.get_food(&id0).unwrap()
         );
         assert!(food_storage.get_food(&id1).is_err());
         assert_eq!(
-            Food::from_partial_food(id2.clone(), partial_food2),
+            Food::from_partial_food(id2.clone(), partial_food2).unwrap(),
             *food_storage.get_food(&id2).unwrap()
         );
     }

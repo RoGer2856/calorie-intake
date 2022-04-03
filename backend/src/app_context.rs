@@ -81,9 +81,10 @@ mod test {
         let mut food_storage_helper = FoodStorageHelper::new();
 
         let partial_food0 = PartialFood {
-            name: "Hamburger".into(),
-            calories: 600,
-            time: "2022 March 2 8:0".into(),
+            id: None,
+            name: Some("Hamburger".into()),
+            calories: Some(600),
+            time: Some("2022 March 2 8:0".into()),
         };
 
         // add food for john
@@ -94,9 +95,10 @@ mod test {
         };
 
         let partial_food1 = PartialFood {
-            name: "Chicken".into(),
-            calories: 300,
-            time: "2022 March 2 12:00".into(),
+            id: None,
+            name: Some("Chicken".into()),
+            calories: Some(300),
+            time: Some("2022 March 2 12:00".into()),
         };
 
         // add food for jane
@@ -111,7 +113,7 @@ mod test {
             let mut food_storage = food_storage.lock().await;
             // check that john's food is in john's storage
             assert_eq!(
-                Food::from_partial_food(id0.clone(), partial_food0),
+                Food::from_partial_food(id0.clone(), partial_food0).unwrap(),
                 *food_storage.get_food(&id0).unwrap()
             );
             // check that jane's food is not in john's storage

@@ -3,7 +3,7 @@ use crate::api::food::messages::*;
 pub fn food_request_array_contains_food(foods: &[AddFoodRequest], food: &Food) -> Result<(), ()> {
     if let Some(_) = foods
         .iter()
-        .find(|item| Food::from_partial_food(food.id.clone(), (*item).clone()) == *food)
+        .find(|item| Food::from_partial_food(food.id.clone(), (*item).clone()).unwrap() == *food)
     {
         Ok(())
     } else {
@@ -14,7 +14,7 @@ pub fn food_request_array_contains_food(foods: &[AddFoodRequest], food: &Food) -
 pub fn food_array_contains_food(foods: &[Food], food: &AddFoodRequest) -> Result<(), ()> {
     if let Some(_) = foods
         .iter()
-        .find(|item| **item == Food::from_partial_food(item.id.clone(), food.clone()))
+        .find(|item| **item == Food::from_partial_food(item.id.clone(), food.clone()).unwrap())
     {
         Ok(())
     } else {
@@ -34,21 +34,24 @@ pub fn generate_example_foods() -> Vec<AddFoodRequest> {
     let mut ret = Vec::new();
 
     ret.push(AddFoodRequest {
-        name: "Hamburger".into(),
-        calories: 600,
-        time: "2022 March 2 8:0".into(),
+        id: None,
+        name: Some("Hamburger".into()),
+        calories: Some(600),
+        time: Some("2022 March 2 8:0".into()),
     });
 
     ret.push(AddFoodRequest {
-        name: "Chicken".into(),
-        calories: 300,
-        time: "2022 March 2 12:00".into(),
+        id: None,
+        name: Some("Chicken".into()),
+        calories: Some(300),
+        time: Some("2022 March 2 12:00".into()),
     });
 
     ret.push(AddFoodRequest {
-        name: "Scrambled eggs".into(),
-        calories: 400,
-        time: "2022 March 2 18:00".into(),
+        id: None,
+        name: Some("Scrambled eggs".into()),
+        calories: Some(400),
+        time: Some("2022 March 2 18:00".into()),
     });
 
     ret

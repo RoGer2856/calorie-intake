@@ -62,6 +62,22 @@ impl From<FoodStorageError> for ErrorResponse {
 
                 msg.to_response(hyper::StatusCode::NOT_FOUND)
             }
+            FoodStorageError::FoodFromPartialError(FoodFromPartialError::MissingField(
+                field_name,
+            )) => {
+                let msg = ErrorMessage {
+                    reason: ("Missing field: ".to_string() + &field_name).to_string(),
+                };
+
+                msg.to_response(hyper::StatusCode::BAD_REQUEST)
+            }
+            FoodStorageError::FoodFromPartialError(FoodFromPartialError::ProvidedId) => {
+                let msg = ErrorMessage {
+                    reason: "id should not be provided".to_string(),
+                };
+
+                msg.to_response(hyper::StatusCode::BAD_REQUEST)
+            }
             FoodStorageError::InternalError => {
                 ErrorResponse::from_status_code(hyper::StatusCode::INTERNAL_SERVER_ERROR)
             }
