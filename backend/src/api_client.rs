@@ -113,6 +113,20 @@ impl ApiClient {
         .await
     }
 
+    pub async fn update_food_by_id(
+        &mut self,
+        access_token: &str,
+        id: &str,
+        food: &UpdateFoodById,
+    ) -> Result<NoBodyResponse, RequestError> {
+        self.json_request_with_no_response_body(
+            hyper::Method::PUT,
+            food,
+            &("/food/".to_string() + id + "?access_token=" + &access_token),
+        )
+        .await
+    }
+
     pub async fn delete_food_by_id(
         &mut self,
         access_token: &str,

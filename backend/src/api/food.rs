@@ -16,6 +16,8 @@ pub mod messages {
     }
 
     pub type GetFoodByIdResponse = crate::services::Food;
+
+    pub type UpdateFoodById = crate::services::PartialFood;
 }
 
 pub async fn add_food(
