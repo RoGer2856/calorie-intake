@@ -75,6 +75,10 @@ pub async fn router(
             hyper::Method::GET,
             "/food/(food-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
         );
+        static ref DELETE_FOOD: RoutingItem = RoutingItem::new(
+            hyper::Method::DELETE,
+            "/food/(food-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
+        );
     }
 
     log::debug!("Request = {} {}", req.method(), req.uri().path());
@@ -95,6 +99,13 @@ pub async fn router(
             .log_routing_error()?
             .as_str();
         crate::api::food::get_food(req, app_context, food_id.to_string()).await
+    } else if let Some(captures) = DELETE_FOOD.match_request(&req.method(), &path) {
+        let food_id = captures
+            .get(1)
+            .ok_or(RoutingError::InvalidCaptureGroupId)
+            .log_routing_error()?
+            .as_str();
+        crate::api::food::delete_food(req, app_context, food_id.to_string()).await
     } else {
         Err(crate::hyper_helpers::ErrorResponse::from_status_code(
             hyper::StatusCode::NOT_FOUND,

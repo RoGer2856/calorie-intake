@@ -39,6 +39,15 @@ impl FoodStorage for InMemoryFoodStorage {
             .ok_or(FoodStorageError::ItemNotFound)
     }
 
+    fn delete_food(&mut self, id: &FoodId) -> Result<(), FoodStorageError> {
+        if let Some(position) = self.foods.iter().position(|item| item.id == *id) {
+            self.foods.swap_remove(position);
+            Ok(())
+        } else {
+            Err(FoodStorageError::ItemNotFound)
+        }
+    }
+
     fn iter_food<'a>(
         &'a mut self,
     ) -> Result<Box<dyn Iterator<Item = Food> + 'a>, FoodStorageError> {
@@ -112,5 +121,43 @@ mod test {
             Err(FoodStorageError::ItemNotFound),
             food_storage.get_food(&FoodId("id".into()))
         )
+    }
+
+    #[test]
+    fn delete_food_by_id() {
+        let partial_food0 = PartialFood {
+            name: "Hamburger".into(),
+            calories: 600,
+            time: "2022 March 2 8:0".into(),
+        };
+
+        let partial_food1 = PartialFood {
+            name: "Chicken".into(),
+            calories: 300,
+            time: "2022 March 2 12:00".into(),
+        };
+
+        let partial_food2 = PartialFood {
+            name: "Scrambled eggs".into(),
+            calories: 400,
+            time: "2022 March 2 18:00".into(),
+        };
+
+        let mut food_storage = InMemoryFoodStorage::new();
+        let id0 = food_storage.add_food(partial_food0.clone()).unwrap();
+        let id1 = food_storage.add_food(partial_food1.clone()).unwrap();
+        let id2 = food_storage.add_food(partial_food2.clone()).unwrap();
+
+        food_storage.delete_food(&id1).unwrap();
+
+        assert_eq!(
+            Food::from_partial_food(id0.clone(), partial_food0),
+            *food_storage.get_food(&id0).unwrap()
+        );
+        assert!(food_storage.get_food(&id1).is_err());
+        assert_eq!(
+            Food::from_partial_food(id2.clone(), partial_food2),
+            *food_storage.get_food(&id2).unwrap()
+        );
     }
 }

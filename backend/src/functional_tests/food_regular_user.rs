@@ -136,3 +136,49 @@ async fn get_food_by_id() {
     )
     .await;
 }
+
+#[tokio::test]
+#[serial_test::serial]
+async fn delete_food_by_id() {
+    let address = (crate::functional_tests::IPV6_LOCALHOST, 4000).into();
+    crate::functional_tests::test_utils::run_test(
+        address,
+        crate::functional_tests::SECRETS_FILE_LOCATION.into(),
+        async {
+            let mut api_client =
+                crate::api_client::ApiClient::new(&("http://".to_string() + &address.to_string()));
+
+            let authorization =
+                DietAuthorization::new(crate::functional_tests::SECRETS_FILE_LOCATION.into())
+                    .unwrap();
+            let access_token = authorization
+                .create_jwt("john".into(), RoleType::RegularUser)
+                .unwrap();
+
+            let foods = generate_example_foods();
+
+            let ids = add_foods(&mut api_client, &access_token.clone(), &foods).await;
+
+            let id_to_delete = ids.get(0).unwrap();
+            api_client
+                .delete_food_by_id(&access_token, id_to_delete)
+                .await
+                .unwrap();
+
+            let ret = api_client.get_food_by_id(&access_token, id_to_delete).await;
+            if let Err(crate::api_client::RequestError::ClientOrServerError(e)) = ret {
+                assert_eq!(e.status, hyper::StatusCode::NOT_FOUND);
+            } else {
+                assert!(false);
+            }
+
+            for id in ids.iter() {
+                if *id != *id_to_delete {
+                    let resp = api_client.get_food_by_id(&access_token, id).await.unwrap();
+                    food_request_array_contains_food(&foods, &resp.object).unwrap();
+                }
+            }
+        },
+    )
+    .await;
+}

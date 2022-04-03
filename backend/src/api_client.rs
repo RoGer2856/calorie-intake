@@ -115,6 +115,19 @@ impl ApiClient {
         .await
     }
 
+    pub async fn delete_food_by_id(
+        &mut self,
+        access_token: &str,
+        id: &str,
+    ) -> Result<StructResponse<DeleteFoodByIdResponse>, RequestError> {
+        self.json_request::<DeleteFoodByIdRequest, DeleteFoodByIdResponse>(
+            hyper::Method::DELETE,
+            &crate::hyper_helpers::EmptyMessage,
+            &("/food/".to_string() + id + "?access_token=" + &access_token),
+        )
+        .await
+    }
+
     pub async fn get_userinfo(
         &mut self,
         access_token: &str,

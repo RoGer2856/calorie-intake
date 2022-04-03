@@ -30,6 +30,7 @@ impl Food {
 pub trait FoodStorage: Send {
     fn add_food(&mut self, partial_food: PartialFood) -> Result<FoodId, FoodStorageError>;
     fn get_food(&mut self, id: &FoodId) -> Result<&Food, FoodStorageError>;
+    fn delete_food(&mut self, id: &FoodId) -> Result<(), FoodStorageError>;
     fn iter_food<'a>(&'a mut self)
         -> Result<Box<dyn Iterator<Item = Food> + 'a>, FoodStorageError>;
 }
