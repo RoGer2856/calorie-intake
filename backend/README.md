@@ -24,8 +24,8 @@ For debug mode, run `cargo run --bin diet-jwt-manager -- -h`
 For release mode, run `cargo run --bin diet-jwt-manager --release -- -h`
 
 Examples:
-* Creating a new regular user jwt for diet-jwt-manager: `cargo run --bin diet-jwt-manager -- create -s test_resources/test_secrets.toml -r regular_user -u john`
-* Creating a new admin user jwt for diet-jwt-manager: `cargo run --bin diet-jwt-manager -- create -s test_resources/test_secrets.toml -r admin -u john`
+* Creating a new regular user jwt for diet-jwt-manager: `cargo run --bin diet-jwt-manager -- create -s test_resources/test_secrets.toml -r regular_user -u john -c 2100`
+* Creating a new admin user jwt for diet-jwt-manager: `cargo run --bin diet-jwt-manager -- create -s test_resources/test_secrets.toml -r admin -u john -c 2100`
 
 ## Building
 

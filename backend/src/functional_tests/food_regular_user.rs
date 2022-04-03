@@ -16,7 +16,7 @@ async fn no_food() {
                 DietAuthorization::new(crate::functional_tests::SECRETS_FILE_LOCATION.into())
                     .unwrap();
             let access_token = authorization
-                .create_jwt("john".into(), RoleType::RegularUser)
+                .create_jwt("john".into(), RoleType::RegularUser, 2100)
                 .unwrap();
 
             let resp = api_client.get_food_list(&access_token).await.unwrap();
@@ -42,7 +42,7 @@ async fn get_multiple_foods() {
                 DietAuthorization::new(crate::functional_tests::SECRETS_FILE_LOCATION.into())
                     .unwrap();
             let access_token = authorization
-                .create_jwt("john".into(), RoleType::RegularUser)
+                .create_jwt("john".into(), RoleType::RegularUser, 2100)
                 .unwrap();
 
             let foods = generate_example_foods();
@@ -74,11 +74,11 @@ async fn multiple_user_foods() {
                     .unwrap();
 
             let access_token0 = authorization
-                .create_jwt("john".into(), RoleType::RegularUser)
+                .create_jwt("john".into(), RoleType::RegularUser, 2100)
                 .unwrap();
 
             let access_token1 = authorization
-                .create_jwt("jane".into(), RoleType::RegularUser)
+                .create_jwt("jane".into(), RoleType::RegularUser, 2100)
                 .unwrap();
 
             let foods = generate_example_foods();
@@ -121,7 +121,7 @@ async fn get_food_by_id() {
                 DietAuthorization::new(crate::functional_tests::SECRETS_FILE_LOCATION.into())
                     .unwrap();
             let access_token = authorization
-                .create_jwt("john".into(), RoleType::RegularUser)
+                .create_jwt("john".into(), RoleType::RegularUser, 2100)
                 .unwrap();
 
             let foods = generate_example_foods();
@@ -152,7 +152,7 @@ async fn update_food() {
                 DietAuthorization::new(crate::functional_tests::SECRETS_FILE_LOCATION.into())
                     .unwrap();
             let access_token = authorization
-                .create_jwt("john".into(), RoleType::RegularUser)
+                .create_jwt("john".into(), RoleType::RegularUser, 2100)
                 .unwrap();
 
             let foods = generate_example_foods();
@@ -207,7 +207,7 @@ async fn delete_food_by_id() {
                 DietAuthorization::new(crate::functional_tests::SECRETS_FILE_LOCATION.into())
                     .unwrap();
             let access_token = authorization
-                .create_jwt("john".into(), RoleType::RegularUser)
+                .create_jwt("john".into(), RoleType::RegularUser, 2100)
                 .unwrap();
 
             let foods = generate_example_foods();

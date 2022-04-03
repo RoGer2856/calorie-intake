@@ -19,7 +19,7 @@ async fn get_regular_user_info() {
             let role = RoleType::RegularUser;
 
             let access_token = authorization
-                .create_jwt(username.into(), role.clone())
+                .create_jwt(username.into(), role.clone(), 2100)
                 .unwrap();
 
             let resp = api_client.get_userinfo(&access_token).await.unwrap();
@@ -50,7 +50,7 @@ async fn get_admin_user_info() {
             let role = RoleType::Admin;
 
             let access_token = authorization
-                .create_jwt(username.into(), role.clone())
+                .create_jwt(username.into(), role.clone(), 2100)
                 .unwrap();
 
             let resp = api_client.get_userinfo(&access_token).await.unwrap();

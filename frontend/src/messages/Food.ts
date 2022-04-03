@@ -5,6 +5,7 @@ export interface IErrorMessage {
 export interface IGetUserInfoResponse {
     username: string,
     role: string,
+    max_calories_per_day: number,
 }
 
 export interface IAddFoodResponse {

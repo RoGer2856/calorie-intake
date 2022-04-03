@@ -34,7 +34,13 @@ function App() {
           }
         </>
         :
-        <Loading />
+        <>
+          {api.errorMessage === ""
+            ?
+            <Loading />
+            :
+            <p>{api.errorMessage}</p>}
+        </>
       }
     </>
   );

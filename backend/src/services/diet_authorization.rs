@@ -43,6 +43,7 @@ pub enum DietAuthorizationError {
     TomlDeserializeError(toml::de::Error),
     InvalidRoleStringError(String),
     InvalidJwtReceivedError,
+    ParseIntError,
 }
 
 impl From<std::io::Error> for DietAuthorizationError {
@@ -62,6 +63,11 @@ impl From<toml::de::Error> for DietAuthorizationError {
         Self::TomlDeserializeError(e)
     }
 }
+impl From<std::num::ParseIntError> for DietAuthorizationError {
+    fn from(_: std::num::ParseIntError) -> Self {
+        Self::ParseIntError
+    }
+}
 
 pub struct DietAuthorization {
     jwt_manager: crate::utils::JwtManager,
@@ -70,6 +76,7 @@ pub struct DietAuthorization {
 pub struct AuthorizationInfo {
     pub username: String,
     pub role: RoleType,
+    pub max_calories_per_day: u16,
 }
 
 impl DietAuthorization {
@@ -90,10 +97,15 @@ impl DietAuthorization {
         &self,
         username: String,
         role: RoleType,
+        max_calories_per_day: u16,
     ) -> Result<String, DietAuthorizationError> {
         let mut claims = std::collections::BTreeMap::new();
         claims.insert("username".to_string(), username);
         claims.insert("role".to_string(), role.to_string());
+        claims.insert(
+            "max_calories_per_day".to_string(),
+            max_calories_per_day.to_string(),
+        );
         Ok(self
             .jwt_manager
             .create_token(&claims)
@@ -108,10 +120,14 @@ impl DietAuthorization {
         let role = claims
             .get("role")
             .ok_or(DietAuthorizationError::InvalidJwtReceivedError)?;
+        let max_calories_per_day = claims
+            .get("max_calories_per_day")
+            .ok_or(DietAuthorizationError::InvalidJwtReceivedError)?;
 
         Ok(AuthorizationInfo {
             username: username.clone(),
             role: RoleType::from_str(&role)?,
+            max_calories_per_day: max_calories_per_day.parse()?,
         })
     }
 }
@@ -126,7 +142,7 @@ mod test {
 
         let username = "username".to_string();
         let jwt = authorization
-            .create_jwt(username.clone(), role.clone())
+            .create_jwt(username.clone(), role.clone(), 2100)
             .unwrap();
         let authz_info = authorization.verify_jwt(&jwt).unwrap();
         assert_eq!(authz_info.role, role);

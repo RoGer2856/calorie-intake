@@ -78,13 +78,13 @@ pub fn main() {
                 diet::services::DietAuthorization::new(secrets_file_location).unwrap();
 
             let access_token_jane = authorization
-                .create_jwt("jane".into(), diet::services::RoleType::RegularUser)
+                .create_jwt("jane".into(), diet::services::RoleType::RegularUser, 2100)
                 .unwrap();
             let access_token_john = authorization
-                .create_jwt("john".into(), diet::services::RoleType::RegularUser)
+                .create_jwt("john".into(), diet::services::RoleType::RegularUser, 2100)
                 .unwrap();
             let _access_token_admin = authorization
-                .create_jwt("admin".into(), diet::services::RoleType::RegularUser)
+                .create_jwt("admin".into(), diet::services::RoleType::RegularUser, 2100)
                 .unwrap();
 
             let foods = create_food_for_the_last_n_days(70);
