@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { MonthFoods } from "../model/Foods";
+import { MonthFoods } from "../../model/Foods";
 import styles from "./YearFoodsView.module.css"
 import MonthFoodsView from "./MonthFoodsView";
 

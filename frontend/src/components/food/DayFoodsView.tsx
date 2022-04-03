@@ -1,8 +1,8 @@
 import { ReactElement } from "react";
-import { IFoodResponse } from "../messages/Food";
+import { IFoodResponse } from "../../messages/Food";
 import FoodView from "./FoodView";
 import styles from "./DayFoodsView.module.css"
-import { dayOfTheWeekToDayName, monthIndexToMonthName } from "../utils/time";
+import { dayOfTheWeekToDayName, monthIndexToMonthName } from "../../utils/time";
 
 export default function DayFoodsView(props: {
     maxCaloriesPerDay: number,

@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 import { Route, Routes } from "react-router-dom";
 import { IUserInfo } from "../../model/UserInfo";
-import MyFoods from "../MyFoods";
+import MyFoods from "../food/MyFoods";
 import PageNotFound from "../PageNotFound";
 import RegularUserLayout from "./RegularUserLayout";
 

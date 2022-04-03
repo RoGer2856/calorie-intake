@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { IFoodResponse } from "../messages/Food";
+import { IFoodResponse } from "../../messages/Food";
 import styles from "./FoodView.module.css"
 
 export default function FoodView(props: {

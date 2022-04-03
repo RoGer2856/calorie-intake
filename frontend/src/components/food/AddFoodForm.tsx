@@ -1,9 +1,9 @@
 import { ReactElement } from "react";
-import { ACCESS_TOKEN } from "../access_token";
-import useApi from "../hooks/use-api";
-import useInput from "../hooks/use-input";
-import { IAddFoodResponse, IFoodRequest } from "../messages/Food";
-import { datetimeLocalInputToRfc3339 } from "../utils/time";
+import { ACCESS_TOKEN } from "../../access_token";
+import useApi from "../../hooks/use-api";
+import useInput from "../../hooks/use-input";
+import { IAddFoodResponse, IFoodRequest } from "../../messages/Food";
+import { datetimeLocalInputToRfc3339 } from "../../utils/time";
 
 export default function AddFoodForm(props: {
     onFoodAdded: (id: string) => void,

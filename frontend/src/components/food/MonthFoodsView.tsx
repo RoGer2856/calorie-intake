@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
-import { DayFoods } from "../model/Foods";
-import { monthIndexToMonthName } from "../utils/time";
+import { DayFoods } from "../../model/Foods";
+import { monthIndexToMonthName } from "../../utils/time";
 import DayFoodsView from "./DayFoodsView";
 import styles from "./MonthFoodsView.module.css"
 
