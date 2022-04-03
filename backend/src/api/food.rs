@@ -17,7 +17,7 @@ pub mod messages {
 
     pub type GetFoodByIdResponse = crate::services::Food;
 
-    pub type UpdateFoodById = crate::services::PartialFood;
+    pub type UpdateFoodRequest = crate::services::PartialFood;
 }
 
 pub async fn add_food(
@@ -137,6 +137,52 @@ pub async fn get_food(
                 hyper::StatusCode::OK,
                 &food_storage.get_food(&food_id)?,
             )?)
+        }
+    }
+}
+
+pub async fn update_food(
+    req: hyper::Request<hyper::Body>,
+    app_context: crate::AppContext,
+    food_id: String,
+) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
+    let access_token =
+        crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
+
+    let authz_info = app_context
+        .authorization
+        .lock()
+        .await
+        .verify_jwt(&access_token)?;
+
+    let mut deserializer = crate::hyper_helpers::Deserializer::new();
+    let payload = deserializer
+        .read_request_as_json::<messages::UpdateFoodRequest>(req)
+        .await?;
+
+    let mut food_storage = app_context.food_storage.lock().await;
+
+    let food_id = &crate::services::FoodId(food_id);
+
+    match authz_info.role {
+        RoleType::Admin => {
+            for (_username, user_food_storage) in food_storage.user_storages_iter() {
+                if let Ok(_) = user_food_storage
+                    .lock()
+                    .await
+                    .update_food(&food_id, &payload)
+                {
+                    return Ok(crate::hyper_helpers::response_ok());
+                }
+            }
+
+            Err(crate::services::FoodStorageError::ItemNotFound.into())
+        }
+        RoleType::RegularUser => {
+            let food_storage = food_storage.get_food_storage_for_user(authz_info.username);
+            let mut food_storage = food_storage.lock().await;
+            food_storage.update_food(&food_id, &payload)?;
+            Ok(crate::hyper_helpers::response_ok())
         }
     }
 }

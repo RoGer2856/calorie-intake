@@ -104,7 +104,7 @@ async fn update_food() {
             let ids = add_foods(&mut api_client, &access_token_john.clone(), &foods).await;
 
             let id_to_update = ids.get(0).unwrap();
-            let updated_food = crate::api::food::messages::UpdateFoodById {
+            let updated_food = crate::api::food::messages::UpdateFoodRequest {
                 id: None,
                 name: Some("new name".into()),
                 calories: Some(0),

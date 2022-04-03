@@ -69,7 +69,7 @@ pub trait FoodStorage: Send {
     fn update_food(
         &mut self,
         id: &FoodId,
-        partial_food: PartialFood,
+        partial_food: &PartialFood,
     ) -> Result<(), FoodStorageError>;
     fn delete_food(&mut self, id: &FoodId) -> Result<(), FoodStorageError>;
     fn iter_food<'a>(&'a mut self)

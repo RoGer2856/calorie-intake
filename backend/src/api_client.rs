@@ -117,7 +117,7 @@ impl ApiClient {
         &mut self,
         access_token: &str,
         id: &str,
-        food: &UpdateFoodById,
+        food: &UpdateFoodRequest,
     ) -> Result<NoBodyResponse, RequestError> {
         self.json_request_with_no_response_body(
             hyper::Method::PUT,

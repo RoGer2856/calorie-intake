@@ -42,7 +42,7 @@ impl FoodStorage for InMemoryFoodStorage {
     fn update_food(
         &mut self,
         id: &FoodId,
-        partial_food: PartialFood,
+        partial_food: &PartialFood,
     ) -> Result<(), FoodStorageError> {
         let food = self
             .foods
@@ -50,7 +50,7 @@ impl FoodStorage for InMemoryFoodStorage {
             .find(|item| item.id == *id)
             .ok_or(FoodStorageError::ItemNotFound)?;
 
-        food.update_from_partial_food(partial_food)?;
+        food.update_from_partial_food(partial_food.clone())?;
 
         Ok(())
     }
@@ -168,7 +168,7 @@ mod test {
         food_storage
             .update_food(
                 &id0,
-                PartialFood {
+                &PartialFood {
                     id: None,
                     name: new_name.clone(),
                     calories: None,
@@ -180,7 +180,7 @@ mod test {
         food_storage
             .update_food(
                 &id1,
-                PartialFood {
+                &PartialFood {
                     id: None,
                     name: None,
                     calories: new_calories,
@@ -192,7 +192,7 @@ mod test {
         food_storage
             .update_food(
                 &id2,
-                PartialFood {
+                &PartialFood {
                     id: None,
                     name: None,
                     calories: None,
