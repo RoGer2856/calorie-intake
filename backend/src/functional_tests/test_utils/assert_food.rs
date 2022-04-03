@@ -1,20 +1,33 @@
 use crate::api::food::messages::*;
 
-pub fn food_array_contains_food(foods: &[Food], food: &AddFoodRequest) -> bool {
-    foods
+pub fn food_request_array_contains_food(foods: &[AddFoodRequest], food: &Food) -> Result<(), ()> {
+    if let Some(_) = foods
         .iter()
-        .find(|item| **item == Food::from_partial_food(item.id.clone(), food.clone()))
-        .is_some()
+        .find(|item| Food::from_partial_food(food.id.clone(), (*item).clone()) == *food)
+    {
+        Ok(())
+    } else {
+        Err(())
+    }
 }
 
-pub fn check_food_array_equality(expected: &[AddFoodRequest], received: &[Food]) -> bool {
+pub fn food_array_contains_food(foods: &[Food], food: &AddFoodRequest) -> Result<(), ()> {
+    if let Some(_) = foods
+        .iter()
+        .find(|item| **item == Food::from_partial_food(item.id.clone(), food.clone()))
+    {
+        Ok(())
+    } else {
+        Err(())
+    }
+}
+
+pub fn check_food_array_equality(expected: &[AddFoodRequest], received: &[Food]) -> Result<(), ()> {
     for food in expected.iter() {
-        if !food_array_contains_food(received, food) {
-            return false;
-        }
+        food_array_contains_food(received, food)?;
     }
 
-    true
+    Ok(())
 }
 
 pub fn generate_example_foods() -> Vec<AddFoodRequest> {
@@ -45,8 +58,17 @@ pub async fn add_foods(
     api_client: &mut crate::ApiClient,
     access_token: &str,
     foods: &[AddFoodRequest],
-) {
+) -> Vec<String> {
+    let mut ids = Vec::new();
     for food in foods.iter() {
-        api_client.add_food(access_token, &food).await.unwrap();
+        ids.push(
+            api_client
+                .add_food(access_token, &food)
+                .await
+                .unwrap()
+                .object
+                .id,
+        );
     }
+    ids
 }

@@ -52,7 +52,7 @@ async fn get_multiple_foods() {
             let resp = api_client.get_food_list(&access_token).await.unwrap();
 
             assert_eq!(foods.len(), resp.object.foods.len());
-            assert!(check_food_array_equality(&foods, &resp.object.foods));
+            check_food_array_equality(&foods, &resp.object.foods).unwrap();
         },
     )
     .await;
@@ -91,7 +91,7 @@ async fn multiple_user_foods() {
                 let resp = api_client.get_food_list(&access_token0).await.unwrap();
 
                 assert_eq!(foods.len(), resp.object.foods.len());
-                assert!(check_food_array_equality(&foods, &resp.object.foods));
+                check_food_array_equality(&foods, &resp.object.foods).unwrap();
             }
 
             // check the list of foods for access_token1
@@ -99,7 +99,38 @@ async fn multiple_user_foods() {
                 let resp = api_client.get_food_list(&access_token1).await.unwrap();
 
                 assert_eq!(foods.len(), resp.object.foods.len());
-                assert!(check_food_array_equality(&foods, &resp.object.foods));
+                check_food_array_equality(&foods, &resp.object.foods).unwrap();
+            }
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn get_food_by_id() {
+    let address = (crate::functional_tests::IPV6_LOCALHOST, 4000).into();
+    crate::functional_tests::test_utils::run_test(
+        address,
+        crate::functional_tests::SECRETS_FILE_LOCATION.into(),
+        async {
+            let mut api_client =
+                crate::api_client::ApiClient::new(&("http://".to_string() + &address.to_string()));
+
+            let authorization =
+                DietAuthorization::new(crate::functional_tests::SECRETS_FILE_LOCATION.into())
+                    .unwrap();
+            let access_token = authorization
+                .create_jwt("john".into(), RoleType::RegularUser)
+                .unwrap();
+
+            let foods = generate_example_foods();
+
+            let ids = add_foods(&mut api_client, &access_token.clone(), &foods).await;
+
+            for id in ids {
+                let resp = api_client.get_food_by_id(&access_token, &id).await.unwrap();
+                food_request_array_contains_food(&foods, &resp.object).unwrap();
             }
         },
     )

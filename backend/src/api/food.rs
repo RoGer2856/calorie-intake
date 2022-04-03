@@ -1,3 +1,5 @@
+use crate::services::RoleType;
+
 pub mod messages {
     pub type Food = crate::services::Food;
 
@@ -12,6 +14,9 @@ pub mod messages {
     pub struct GetFoodListResponse {
         pub foods: Vec<Food>,
     }
+
+    pub type GetFoodByIdRequest = crate::hyper_helpers::EmptyMessage;
+    pub type GetFoodByIdResponse = crate::services::Food;
 }
 
 pub async fn add_food(
@@ -77,4 +82,36 @@ pub async fn get_food_list(
         hyper::StatusCode::OK,
         &resp_msg,
     )?)
+}
+
+pub async fn get_food(
+    req: hyper::Request<hyper::Body>,
+    app_context: crate::AppContext,
+    food_id: String,
+) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
+    let access_token =
+        crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
+
+    let authz_info = app_context
+        .authorization
+        .lock()
+        .await
+        .verify_jwt(&access_token)?;
+
+    let food_storage = app_context
+        .food_storage
+        .lock()
+        .await
+        .get_food_storage_for_user(authz_info.username);
+    let mut food_storage = food_storage.lock().await;
+
+    match authz_info.role {
+        RoleType::Admin => {
+            unimplemented!();
+        }
+        RoleType::RegularUser => Ok(crate::hyper_helpers::response::create_json_response(
+            hyper::StatusCode::OK,
+            &food_storage.get_food(&crate::services::FoodId(food_id))?,
+        )?),
+    }
 }

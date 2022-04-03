@@ -102,6 +102,19 @@ impl ApiClient {
         .await
     }
 
+    pub async fn get_food_by_id(
+        &mut self,
+        access_token: &str,
+        id: &str,
+    ) -> Result<StructResponse<GetFoodByIdResponse>, RequestError> {
+        self.json_request::<GetFoodByIdRequest, GetFoodByIdResponse>(
+            hyper::Method::GET,
+            &crate::hyper_helpers::EmptyMessage,
+            &("/food/".to_string() + id + "?access_token=" + &access_token),
+        )
+        .await
+    }
+
     pub async fn get_userinfo(
         &mut self,
         access_token: &str,
