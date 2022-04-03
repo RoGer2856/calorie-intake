@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ReactElement } from "react";
-import { ACCESS_TOKEN } from '../access_token';
 import useApi from '../hooks/use-api';
-import { IFoodResponse, IGetFoodListResponse } from '../messages/Food';
+import { IGetFoodListResponse } from '../messages/Food';
 import { AllFoods, YearFoods } from '../model/GroupedFood';
 import AddFoodForm from './AddFoodForm';
 import YearFoodsView from './YearFoodsView';

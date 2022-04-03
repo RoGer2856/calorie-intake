@@ -2,6 +2,11 @@ export interface IErrorMessage {
     reason: string,
 }
 
+export interface IGetUserInfoResponse {
+    username: string,
+    role: string,
+}
+
 export interface IAddFoodResponse {
     id: string,
 }
