@@ -1,4 +1,5 @@
 mod food_regular_user;
+mod userinfo;
 
 pub mod test_utils;
 

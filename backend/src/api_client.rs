@@ -1,4 +1,5 @@
 use crate::api::food::messages::*;
+use crate::api::userinfo::messages::*;
 
 pub struct ApiClient {
     base_url: String,
@@ -97,6 +98,18 @@ impl ApiClient {
             hyper::Method::GET,
             &crate::hyper_helpers::EmptyMessage,
             &("/food?access_token=".to_string() + &access_token),
+        )
+        .await
+    }
+
+    pub async fn get_userinfo(
+        &mut self,
+        access_token: &str,
+    ) -> Result<StructResponse<GetUserInfoResponse>, RequestError> {
+        self.json_request::<GetUserInfoRequest, GetUserInfoResponse>(
+            hyper::Method::GET,
+            &crate::hyper_helpers::EmptyMessage,
+            &("/userinfo?access_token=".to_string() + &access_token),
         )
         .await
     }
