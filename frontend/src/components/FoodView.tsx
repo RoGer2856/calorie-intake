@@ -5,7 +5,7 @@ import styles from "./FoodView.module.css"
 export default function FoodView(props: {
     food: IFoodResponse,
 }): ReactElement {
-    const dt = new Date(Date.parse(props.food.time.toString()));
+    const dt = new Date(Date.parse(props.food.time));
     return (
         <>
             <div className={styles.container.toString()}>

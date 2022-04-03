@@ -13,7 +13,7 @@ export default function DayFoodsView(props: {
                 <h1>Day: {props.dateOfMonth}</h1>
                 {props.foods.map((food: IFoodResponse) => {
                     return (
-                        <FoodView key={food.id.toString()} food={food} />
+                        <FoodView key={food.id} food={food} />
                     );
                 })}
 

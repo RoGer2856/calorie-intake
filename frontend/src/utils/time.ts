@@ -1,4 +1,4 @@
-export function datetimeLocalInputToRfc3339(dateTimeLocalInput: String) {
+export function datetimeLocalInputToRfc3339(dateTimeLocalInput: string) {
     function getRfc3339TimezoneOffset() {
         let offsetInSeconds = new Date().getTimezoneOffset();
 

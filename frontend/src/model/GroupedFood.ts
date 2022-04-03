@@ -11,8 +11,8 @@ export class DayFoods {
     addFood(food: IFoodResponse) {
         this.foods.push(food);
         this.foods.sort((a: IFoodResponse, b: IFoodResponse) => {
-                const aDt = Date.parse(a.time.toString());
-                const bDt = Date.parse(b.time.toString());
+                const aDt = Date.parse(a.time);
+                const bDt = Date.parse(b.time);
                 return aDt < bDt ? 1 : -1;
         })
     }
@@ -27,7 +27,7 @@ export class MonthFoods {
     }
 
     addFood(food: IFoodResponse) {
-        const dt = new Date(Date.parse(food.time.toString()));
+        const dt = new Date(Date.parse(food.time));
         const dateOfMonth = dt.getDate();
 
         if (!(dateOfMonth in this.days)) {
@@ -55,7 +55,7 @@ export class YearFoods {
     }
 
     addFood(food: IFoodResponse) {
-        const dt = new Date(Date.parse(food.time.toString()));
+        const dt = new Date(Date.parse(food.time));
         const month = dt.getMonth();
 
         if (!(month in this.months)) {
@@ -78,7 +78,7 @@ export class AllFoods {
     years: YearFoods[] = [];
 
     addFood(food: IFoodResponse) {
-        const dt = new Date(Date.parse(food.time.toString()));
+        const dt = new Date(Date.parse(food.time));
         const year = dt.getFullYear();
 
         if (!(year in this.years)) {

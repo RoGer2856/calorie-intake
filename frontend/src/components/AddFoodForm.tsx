@@ -1,12 +1,15 @@
 import { ReactElement } from "react";
 import { ACCESS_TOKEN } from "../access_token";
+import useApi from "../hooks/use-api";
 import useInput from "../hooks/use-input";
-import { IFoodRequest } from "../messages/Food";
+import { IAddFoodResponse, IFoodRequest } from "../messages/Food";
 import { datetimeLocalInputToRfc3339 } from "../utils/time";
 
 export default function AddFoodForm(props: {
-    onFoodAdded: (id: String) => void,
+    onFoodAdded: (id: string) => void,
 }): ReactElement {
+    const api = useApi();
+
     let nameInput = useInput('', (name: string) => {
         return name.length !== 0;
     });
@@ -28,20 +31,14 @@ export default function AddFoodForm(props: {
             time: datetimeLocalInputToRfc3339(timeInput.value),
         }
 
-        let response: Response = await fetch(`/api/food?access_token=${ACCESS_TOKEN}`,
-            {
-                method: "POST",
-                body: JSON.stringify(food),
-            });
-
-        if (response.ok) {
-            nameInput.reset("");
-            caloriesInput.reset("");
-
-            const data = await response.json();
+        let response = await api.addFood(food);
+        if (response !== null) {
+            let data = response as IAddFoodResponse;
             props.onFoodAdded(data.id);
-        } else {
         }
+
+        nameInput.reset("");
+        caloriesInput.reset("");
     }
 
     return (

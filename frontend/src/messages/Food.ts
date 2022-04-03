@@ -1,14 +1,22 @@
+export interface IErrorMessage {
+    reason: string,
+}
+
+export interface IAddFoodResponse {
+    id: string,
+}
+
 export interface IFoodResponse {
-    id: String,
-    name: String,
+    id: string,
+    name: string,
     calories: number,
-    time: String,
+    time: string,
 }
 
 export interface IFoodRequest {
-    name: String,
+    name: string,
     calories: number,
-    time: String,
+    time: string,
 }
 
 export interface IGetFoodListResponse {
