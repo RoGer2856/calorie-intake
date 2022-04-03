@@ -98,20 +98,30 @@ pub async fn get_food(
         .await
         .verify_jwt(&access_token)?;
 
-    let food_storage = app_context
-        .food_storage
-        .lock()
-        .await
-        .get_food_storage_for_user(authz_info.username);
-    let mut food_storage = food_storage.lock().await;
+    let mut food_storage = app_context.food_storage.lock().await;
+
+    let food_id = &crate::services::FoodId(food_id);
 
     match authz_info.role {
         RoleType::Admin => {
-            unimplemented!();
+            for (_username, user_food_storage) in food_storage.user_storages_iter() {
+                if let Ok(food) = user_food_storage.lock().await.get_food(&food_id) {
+                    return Ok(crate::hyper_helpers::response::create_json_response(
+                        hyper::StatusCode::OK,
+                        &food,
+                    )?);
+                }
+            }
+
+            Err(crate::services::FoodStorageError::ItemNotFound.into())
         }
-        RoleType::RegularUser => Ok(crate::hyper_helpers::response::create_json_response(
-            hyper::StatusCode::OK,
-            &food_storage.get_food(&crate::services::FoodId(food_id))?,
-        )?),
+        RoleType::RegularUser => {
+            let food_storage = food_storage.get_food_storage_for_user(authz_info.username);
+            let mut food_storage = food_storage.lock().await;
+            Ok(crate::hyper_helpers::response::create_json_response(
+                hyper::StatusCode::OK,
+                &food_storage.get_food(&food_id)?,
+            )?)
+        }
     }
 }

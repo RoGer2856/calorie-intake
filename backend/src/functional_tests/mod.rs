@@ -1,3 +1,4 @@
+mod food_admin;
 mod food_regular_user;
 mod userinfo;
 

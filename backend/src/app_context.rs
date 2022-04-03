@@ -5,7 +5,6 @@ use crate::services::*;
 
 pub struct FoodStorageHelper {
     food_storage: Vec<(String, Arc<Mutex<Box<dyn FoodStorage>>>)>,
-    // food_storage: Vec<(String, Arc<Mutex<Box<dyn FoodStorage<Iter = dyn Iterator<Item = Food>>>>>)>,
 }
 
 #[derive(Clone)]
@@ -26,6 +25,7 @@ impl AppContext {
             food_storage: std::sync::Arc::new(Mutex::new(FoodStorageHelper::new())),
         }
     }
+
     pub async fn get_food_storage_for_user(
         &mut self,
         username: String,
@@ -63,6 +63,12 @@ impl FoodStorageHelper {
 
             food_storage_for_user
         }
+    }
+
+    pub fn user_storages_iter<'a>(
+        &'a self,
+    ) -> std::slice::Iter<'a, (String, Arc<Mutex<Box<dyn FoodStorage>>>)> {
+        self.food_storage.iter()
     }
 }
 
