@@ -1,0 +1,12 @@
+.frame {
+    border-width: 2px;
+    border-color: grey;
+    border-style: solid;
+    padding: 5px;
+}
+
+.container {
+    padding: 5px;
+    display: flex;
+    flex-flow: row wrap;
+}

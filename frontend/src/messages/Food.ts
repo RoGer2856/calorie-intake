@@ -10,3 +10,7 @@ export interface IFoodRequest {
     calories: number,
     time: String,
 }
+
+export interface IGetFoodListResponse {
+    foods: IFoodResponse[],
+}
