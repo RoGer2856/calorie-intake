@@ -155,17 +155,17 @@ pub async fn update_food(
         .await
         .verify_jwt(&access_token)?;
 
-    let mut deserializer = crate::hyper_helpers::Deserializer::new();
-    let payload = deserializer
-        .read_request_as_json::<messages::UpdateFoodRequest>(req)
-        .await?;
-
-    let mut food_storage = app_context.food_storage.lock().await;
-
-    let food_id = &crate::services::FoodId(food_id);
-
     match authz_info.role {
         RoleType::Admin => {
+            let mut deserializer = crate::hyper_helpers::Deserializer::new();
+            let payload = deserializer
+                .read_request_as_json::<messages::UpdateFoodRequest>(req)
+                .await?;
+
+            let food_storage = app_context.food_storage.lock().await;
+
+            let food_id = &crate::services::FoodId(food_id);
+
             for (_username, user_food_storage) in food_storage.user_storages_iter() {
                 if let Ok(_) = user_food_storage
                     .lock()
@@ -178,12 +178,9 @@ pub async fn update_food(
 
             Err(crate::services::FoodStorageError::ItemNotFound.into())
         }
-        RoleType::RegularUser => {
-            let food_storage = food_storage.get_food_storage_for_user(authz_info.username);
-            let mut food_storage = food_storage.lock().await;
-            food_storage.update_food(&food_id, &payload)?;
-            Ok(crate::hyper_helpers::response_ok())
-        }
+        RoleType::RegularUser => Ok(crate::hyper_helpers::response_from_status_code(
+            hyper::StatusCode::UNAUTHORIZED,
+        )),
     }
 }
 
@@ -201,12 +198,12 @@ pub async fn delete_food(
         .await
         .verify_jwt(&access_token)?;
 
-    let mut food_storage = app_context.food_storage.lock().await;
-
-    let food_id = &crate::services::FoodId(food_id);
-
     match authz_info.role {
         RoleType::Admin => {
+            let food_storage = app_context.food_storage.lock().await;
+
+            let food_id = &crate::services::FoodId(food_id);
+
             for (_username, user_food_storage) in food_storage.user_storages_iter() {
                 if let Ok(_food) = user_food_storage.lock().await.delete_food(&food_id) {
                     return Ok(crate::hyper_helpers::response_ok());
@@ -215,11 +212,8 @@ pub async fn delete_food(
 
             Err(crate::services::FoodStorageError::ItemNotFound.into())
         }
-        RoleType::RegularUser => {
-            let food_storage = food_storage.get_food_storage_for_user(authz_info.username);
-            let mut food_storage = food_storage.lock().await;
-            food_storage.delete_food(&food_id)?;
-            Ok(crate::hyper_helpers::response_ok())
-        }
+        RoleType::RegularUser => Ok(crate::hyper_helpers::response_from_status_code(
+            hyper::StatusCode::UNAUTHORIZED,
+        )),
     }
 }

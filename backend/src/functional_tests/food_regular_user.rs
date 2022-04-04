@@ -166,26 +166,14 @@ async fn update_food() {
                 calories: Some(0),
                 time: Some("new time".into()),
             };
-            api_client
+            assert!(api_client
                 .update_food_by_id(&access_token, id_to_update, &updated_food)
                 .await
-                .unwrap();
+                .is_err());
 
             for id in ids.iter() {
-                let resp = api_client.get_food_by_id(&access_token, &id).await.unwrap();
-
-                if *id == *id_to_update {
-                    assert_eq!(
-                        resp.object,
-                        crate::services::Food::from_partial_food(
-                            crate::services::FoodId(id_to_update.clone()),
-                            updated_food.clone()
-                        )
-                        .unwrap()
-                    );
-                } else {
-                    food_request_array_contains_food(&foods, &resp.object).unwrap();
-                }
+                let resp = api_client.get_food_by_id(&access_token, id).await.unwrap();
+                food_request_array_contains_food(&foods, &resp.object).unwrap();
             }
         },
     )
@@ -215,23 +203,14 @@ async fn delete_food_by_id() {
             let ids = add_foods(&mut api_client, &access_token.clone(), &foods).await;
 
             let id_to_delete = ids.get(0).unwrap();
-            api_client
+            assert!(api_client
                 .delete_food_by_id(&access_token, id_to_delete)
                 .await
-                .unwrap();
-
-            let ret = api_client.get_food_by_id(&access_token, id_to_delete).await;
-            if let Err(crate::api_client::RequestError::ClientOrServerError(e)) = ret {
-                assert_eq!(e.status, hyper::StatusCode::NOT_FOUND);
-            } else {
-                assert!(false);
-            }
+                .is_err());
 
             for id in ids.iter() {
-                if *id != *id_to_delete {
-                    let resp = api_client.get_food_by_id(&access_token, id).await.unwrap();
-                    food_request_array_contains_food(&foods, &resp.object).unwrap();
-                }
+                let resp = api_client.get_food_by_id(&access_token, id).await.unwrap();
+                food_request_array_contains_food(&foods, &resp.object).unwrap();
             }
         },
     )
