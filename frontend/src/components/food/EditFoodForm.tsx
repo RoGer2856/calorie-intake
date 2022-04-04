@@ -6,8 +6,9 @@ import { datetimeLocalInputToRfc3339, dateToDatetimeLocalInput } from "../../uti
 
 export default function EditFoodForm(props: {
     food: IFoodResponse,
-    onFoodEdited: (id: string) => void,
-    onCancel: () => void,
+    onEdited: (id: string) => void,
+    onCancelled: (id: string) => void,
+    onDeleted: (id: string) => void,
 }): ReactElement {
     const api = useApi();
 
@@ -40,12 +41,19 @@ export default function EditFoodForm(props: {
 
         let response = await api.updateFood(props.food.id, food);
         if (response !== null) {
-            props.onFoodEdited(props.food.id);
+            props.onEdited(props.food.id);
         }
     }
 
     function cancelHandler() {
-        props.onCancel();
+        props.onCancelled(props.food.id);
+    }
+
+    async function deleteHandler() {
+        let response = await api.deleteFood(props.food.id);
+        if (response !== null) {
+            props.onDeleted(props.food.id);
+        }
     }
 
     return (
@@ -110,6 +118,14 @@ export default function EditFoodForm(props: {
                     type="submit"
                 >
                     Save
+                </button>
+
+                <button
+                    className="btn btn-primary m-1"
+                    type="button"
+                    onClick={deleteHandler}
+                >
+                    Delete
                 </button>
 
                 {api.errorMessage === ""

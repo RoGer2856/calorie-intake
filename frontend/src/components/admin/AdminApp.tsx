@@ -1,6 +1,7 @@
 import { ReactElement } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { IUserInfo } from "../../model/UserInfo";
+import MyFoods from "../food/MyFoods";
 import PageNotFound from "../PageNotFound";
 import AdminLayout from "./AdminLayout";
 import ReportScreen from "./ReportScreen";
@@ -13,7 +14,9 @@ export default function AdminApp(props: {
             <AdminLayout userInfo={props.userInfo}>
                 <Routes>
                     <Route path="/">
-                        <Route index element={<ReportScreen />} />
+                        <Route index element={<Navigate replace to="/my-consumption" />} />
+                        <Route path="/my-consumption" element={<MyFoods maxCaloriesPerDay={props.userInfo.maxCaloriesPerDay} />} />
+                        <Route path="/report" element={<ReportScreen />} />
                     </Route>
                     <Route path="*" element={<PageNotFound />} />
                 </Routes>

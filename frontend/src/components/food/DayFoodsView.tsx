@@ -28,7 +28,11 @@ export default function DayFoodsView(props: {
         setFoodIdUnderEditing(null);
     }
 
-    function foodEditCancelledHandler() {
+    function foodEditCancelledHandler(id: string) {
+        setFoodIdUnderEditing(null);
+    }
+
+    function foodDeletedHandler(id: string) {
         setFoodIdUnderEditing(null);
     }
 
@@ -52,8 +56,9 @@ export default function DayFoodsView(props: {
                             <div key={food.id}>
                                 <EditFoodForm
                                     food={food}
-                                    onFoodEdited={foodEditedHandler}
-                                    onCancel={foodEditCancelledHandler}
+                                    onEdited={foodEditedHandler}
+                                    onCancelled={foodEditCancelledHandler}
+                                    onDeleted={foodDeletedHandler}
                                 />
                             </div>
                         );

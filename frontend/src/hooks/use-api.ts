@@ -18,12 +18,22 @@ export type UseApiHandler = {
   addFood: (food: IFoodRequest) => Promise<IAddFoodResponse | null>;
   getFood: (id: String) => Promise<IFoodResponse | null>;
   updateFood: (id: String, food: IUpdateFoodRequest) => Promise<{} | null>;
+  deleteFood: (id: String) => Promise<{} | null>;
   getFoodList: () => Promise<IGetFoodListResponse | null>;
 };
 
 export default function useApi(): UseApiHandler {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  async function handleErrorResponse(response: Response) {
+    if (response.bodyUsed) {
+      const data = (await response.json()) as IErrorMessage;
+      setErrorMessage(data.reason);
+    } else {
+      setErrorMessage(`Error: Status = ${response.status}, StatusText = ${response.statusText}`)
+    }
+  }
 
   async function getUserInfo(): Promise<IUserInfo | null> {
     setIsLoading(true);
@@ -62,9 +72,7 @@ export default function useApi(): UseApiHandler {
       return ret;
     } else {
       setIsLoading(false);
-
-      const data = (await response.json()) as IErrorMessage;
-      setErrorMessage(data.reason);
+      await handleErrorResponse(response);
       return null;
     }
   }
@@ -87,9 +95,7 @@ export default function useApi(): UseApiHandler {
       return (await response.json()) as IAddFoodResponse;
     } else {
       setIsLoading(false);
-
-      const data = (await response.json()) as IErrorMessage;
-      setErrorMessage(data.reason);
+      await handleErrorResponse(response);
       return null;
     }
   }
@@ -111,9 +117,7 @@ export default function useApi(): UseApiHandler {
       return (await response.json()) as IFoodResponse;
     } else {
       setIsLoading(false);
-
-      const data = (await response.json()) as IErrorMessage;
-      setErrorMessage(data.reason);
+      await handleErrorResponse(response);
       return null;
     }
   }
@@ -136,9 +140,29 @@ export default function useApi(): UseApiHandler {
       return {};
     } else {
       setIsLoading(false);
+      await handleErrorResponse(response);
+      return null;
+    }
+  }
 
-      const data = (await response.json()) as IErrorMessage;
-      setErrorMessage(data.reason);
+  async function deleteFood(id: String): Promise<{} | null> {
+    setIsLoading(true);
+    setErrorMessage("");
+
+    let response: Response = await fetch(
+      `/api/food/${id}?access_token=${ACCESS_TOKEN}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (response.ok) {
+      setIsLoading(false);
+
+      return {};
+    } else {
+      setIsLoading(false);
+      await handleErrorResponse(response);
       return null;
     }
   }
@@ -160,9 +184,7 @@ export default function useApi(): UseApiHandler {
       return (await response.json()) as IGetFoodListResponse;
     } else {
       setIsLoading(false);
-
-      const data = (await response.json()) as IErrorMessage;
-      setErrorMessage(data.reason);
+      await handleErrorResponse(response);
       return null;
     }
   }
@@ -174,6 +196,7 @@ export default function useApi(): UseApiHandler {
     addFood,
     getFood,
     updateFood,
+    deleteFood,
     getFoodList,
   };
 }
