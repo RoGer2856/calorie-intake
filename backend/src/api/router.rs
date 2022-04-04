@@ -69,7 +69,11 @@ pub async fn router(
     lazy_static! {
         static ref GET_STATUS: RoutingItem = RoutingItem::new(hyper::Method::GET, "/status");
         static ref GET_USERINFO: RoutingItem = RoutingItem::new(hyper::Method::GET, "/userinfo");
+        static ref GET_FOOD_REPORT: RoutingItem =
+            RoutingItem::new(hyper::Method::GET, "/food/report");
         static ref GET_FOOD_LIST: RoutingItem = RoutingItem::new(hyper::Method::GET, "/food");
+        static ref GET_ALL_USER_FOOD_LIST: RoutingItem =
+            RoutingItem::new(hyper::Method::GET, "/food/all");
         static ref POST_FOOD: RoutingItem = RoutingItem::new(hyper::Method::POST, "/food");
         static ref GET_FOOD: RoutingItem = RoutingItem::new(
             hyper::Method::GET,
@@ -92,8 +96,14 @@ pub async fn router(
         crate::api::status(req, app_context).await
     } else if let Some(_captures) = GET_USERINFO.match_request(&req.method(), &path) {
         crate::api::userinfo::get_userinfo(req, app_context).await
+    } else if let Some(_captures) = GET_USERINFO.match_request(&req.method(), &path) {
+        crate::api::userinfo::get_userinfo(req, app_context).await
+    } else if let Some(_captures) = GET_FOOD_REPORT.match_request(&req.method(), &path) {
+        crate::api::food::get_report(req, app_context).await
     } else if let Some(_captures) = GET_FOOD_LIST.match_request(&req.method(), &path) {
         crate::api::food::get_food_list(req, app_context).await
+    } else if let Some(_captures) = GET_ALL_USER_FOOD_LIST.match_request(&req.method(), &path) {
+        crate::api::food::get_all_user_food_list(req, app_context).await
     } else if let Some(_captures) = POST_FOOD.match_request(&req.method(), &path) {
         crate::api::food::add_food(req, app_context).await
     } else if let Some(captures) = GET_FOOD.match_request(&req.method(), &path) {

@@ -101,6 +101,28 @@ impl ApiClient {
         .await
     }
 
+    pub async fn get_all_user_food_list(
+        &mut self,
+        access_token: &str,
+    ) -> Result<StructResponse<GetFoodListResponse>, RequestError> {
+        self.empty_request_with_json_response::<GetFoodListResponse>(
+            hyper::Method::GET,
+            &("/food/all?access_token=".to_string() + &access_token),
+        )
+        .await
+    }
+
+    pub async fn get_food_report(
+        &mut self,
+        access_token: &str,
+    ) -> Result<StructResponse<GetFoodReportResponse>, RequestError> {
+        self.empty_request_with_json_response::<GetFoodReportResponse>(
+            hyper::Method::GET,
+            &("/food/report?access_token=".to_string() + &access_token),
+        )
+        .await
+    }
+
     pub async fn get_food_by_id(
         &mut self,
         access_token: &str,

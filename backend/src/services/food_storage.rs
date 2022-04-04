@@ -61,6 +61,12 @@ impl Food {
                 .ok_or(FoodFromPartialError::MissingField("time".to_string()))?,
         })
     }
+
+    pub fn get_date_time(
+        &self,
+    ) -> Result<chrono::DateTime<chrono::Local>, crate::utils::time::DateTimeFromStrError> {
+        crate::utils::time::date_time_from_str(&self.time)
+    }
 }
 
 pub trait FoodStorage: Send {

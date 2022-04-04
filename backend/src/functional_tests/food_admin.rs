@@ -34,7 +34,10 @@ async fn multiple_user_foods() {
             add_foods(&mut api_client, &access_token1.clone(), &foods).await;
 
             // check the list of foods for access_token_admin
-            let resp = api_client.get_food_list(&access_token_admin).await.unwrap();
+            let resp = api_client
+                .get_all_user_food_list(&access_token_admin)
+                .await
+                .unwrap();
             assert_eq!(foods.len() * 2, resp.object.foods.len());
         },
     )
