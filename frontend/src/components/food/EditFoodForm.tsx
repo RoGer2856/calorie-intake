@@ -1,11 +1,13 @@
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import useApi from "../../hooks/use-api";
 import useInput from "../../hooks/use-input";
-import { IAddFoodResponse, IFoodRequest } from "../../messages/Food";
-import { datetimeLocalInputToRfc3339 } from "../../utils/time";
+import { IFoodResponse, IUpdateFoodRequest } from "../../messages/Food";
+import { datetimeLocalInputToRfc3339, dateToDatetimeLocalInput } from "../../utils/time";
 
 export default function EditFoodForm(props: {
-    onFoodAdded: (id: string) => void,
+    food: IFoodResponse,
+    onFoodEdited: (id: string) => void,
+    onCancel: () => void,
 }): ReactElement {
     const api = useApi();
 
@@ -21,31 +23,40 @@ export default function EditFoodForm(props: {
         return true;
     });
 
+    useEffect(() => {
+        nameInput.reset(props.food.name);
+        caloriesInput.reset(props.food.calories.toString());
+        timeInput.reset(dateToDatetimeLocalInput(new Date(props.food.time)));
+    }, [props.food]);
+
     async function submitHandler(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        let food: IFoodRequest = {
+        let food: IUpdateFoodRequest = {
             name: nameInput.value,
             calories: parseInt(caloriesInput.value),
             time: datetimeLocalInputToRfc3339(timeInput.value),
         }
 
-        let response = await api.addFood(food);
+        let response = await api.updateFood(props.food.id, food);
         if (response !== null) {
-            let data = response as IAddFoodResponse;
-            props.onFoodAdded(data.id);
+            props.onFoodEdited(props.food.id);
         }
+    }
 
-        nameInput.reset("");
-        caloriesInput.reset("");
+    function cancelHandler() {
+        props.onCancel();
     }
 
     return (
         <>
-            <h1>Add food</h1>
             <form onSubmit={submitHandler}>
                 <div>
+                    <label
+                        htmlFor="name"
+                        className="form-label">What did you eat?</label>
                     <input
+                        className="form-control"
                         type='text'
                         id='name'
                         value={nameInput.value}
@@ -56,7 +67,11 @@ export default function EditFoodForm(props: {
                 </div>
 
                 <div>
+                    <label
+                        htmlFor="calories"
+                        className="form-label">How much calories did you eat?</label>
                     <input
+                        className="form-control"
                         type='number'
                         id='calories'
                         value={caloriesInput.value}
@@ -68,7 +83,11 @@ export default function EditFoodForm(props: {
                 </div>
 
                 <div>
+                    <label
+                        htmlFor="time"
+                        className="form-label">When did you eat it (UTC timezone)?</label>
                     <input
+                        className="form-control"
                         type='datetime-local'
                         id='time'
                         value={timeInput.value}
@@ -78,7 +97,26 @@ export default function EditFoodForm(props: {
                     />
                 </div>
 
-                <button type="submit">Save</button>
+                <button
+                    className="btn btn-primary m-1"
+                    type="button"
+                    onClick={cancelHandler}
+                >
+                    Cancel
+                </button>
+
+                <button
+                    className="btn btn-primary"
+                    type="submit"
+                >
+                    Save
+                </button>
+
+                {api.errorMessage === ""
+                    ?
+                    <></>
+                    :
+                    <p className="alert alert-danger">{api.errorMessage}</p>}
             </form>
         </>
     );

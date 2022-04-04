@@ -1,8 +1,8 @@
 import { ReactElement, useState } from "react";
 import { IFoodResponse } from "../../messages/Food";
 import FoodView from "./FoodView";
-import styles from "./DayFoodsView.module.css"
 import { dayOfTheWeekToDayName, monthIndexToMonthName } from "../../utils/time";
+import EditFoodForm from "./EditFoodForm";
 
 export default function DayFoodsView(props: {
     maxCaloriesPerDay: number,
@@ -20,45 +20,58 @@ export default function DayFoodsView(props: {
 
     const caloriesExceededMaximum = calories > props.maxCaloriesPerDay;
 
-    function saveHandler() {
-        setFoodIdUnderEditing(null);
-    }
-
     function editHandler(foodId: string) {
         setFoodIdUnderEditing(foodId);
     }
 
+    function foodEditedHandler(id: string) {
+        setFoodIdUnderEditing(null);
+    }
+
+    function foodEditCancelledHandler() {
+        setFoodIdUnderEditing(null);
+    }
+
     return (
         <>
-            <div className={styles.container.toString()}>
+            <div className="card p-2 m-1">
+                <div className="card-header">
+                    <h1>{dayOfTheWeekToDayName(props.dayOfTheWeek)}</h1>
+                    <p>{monthIndexToMonthName(props.month)} {props.dateOfMonth}</p>
+                </div>
                 {caloriesExceededMaximum
                     ?
-                    <p>You consumed more than {props.maxCaloriesPerDay} kcal</p>
+                    <div className="alert alert-danger">
+                        You consumed more than {props.maxCaloriesPerDay} kcal
+                    </div>
                     :
                     <></>}
-                <h1>{dayOfTheWeekToDayName(props.dayOfTheWeek)}</h1>
-                <p>{monthIndexToMonthName(props.month)} {props.dateOfMonth}</p>
                 {props.foods.map((food: IFoodResponse) => {
-                    if (foodIdUnderEditing !== null) {
-                        if (foodIdUnderEditing === food.id) {
-                            return (
-                                <div key={food.id}>
-                                    <FoodView food={food} />
-                                    <button onClick={saveHandler}>Save</button>
-                                </div>
-                            );
-                        } else {
-                            return (
-                                <div key={food.id}>
-                                    <FoodView food={food} />
-                                </div>
-                            );
-                        }
-                    } else {
+                    if (foodIdUnderEditing === food.id) {
                         return (
                             <div key={food.id}>
-                                <FoodView food={food} />
-                                <button onClick={(e) => editHandler(food.id)}>Edit</button>
+                                <EditFoodForm
+                                    food={food}
+                                    onFoodEdited={foodEditedHandler}
+                                    onCancel={foodEditCancelledHandler}
+                                />
+                            </div>
+                        );
+                    } else {
+                        return (
+                            <div className="card my-1" key={food.id}>
+                                <ul className="list-group list-group-flush">
+                                    <li className="list-group-item">
+                                        <FoodView food={food} />
+                                        <button
+                                            className="btn btn-primary"
+                                            type="button"
+                                            onClick={(e) => editHandler(food.id)}
+                                        >
+                                            Edit
+                                        </button>
+                                    </li>
+                                </ul>
                             </div>
                         );
                     }

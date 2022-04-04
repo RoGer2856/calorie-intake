@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ACCESS_TOKEN } from "../access_token";
 import {
   IAddFoodResponse,
+  IUpdateFoodRequest,
   IErrorMessage,
   IFoodRequest,
   IFoodResponse,
@@ -15,7 +16,8 @@ export type UseApiHandler = {
   errorMessage: string;
   getUserInfo: () => Promise<IUserInfo | null>;
   addFood: (food: IFoodRequest) => Promise<IAddFoodResponse | null>;
-  getFood(id: String): Promise<IFoodResponse | null>;
+  getFood: (id: String) => Promise<IFoodResponse | null>;
+  updateFood: (id: String, food: IUpdateFoodRequest) => Promise<{} | null>;
   getFoodList: () => Promise<IGetFoodListResponse | null>;
 };
 
@@ -116,6 +118,31 @@ export default function useApi(): UseApiHandler {
     }
   }
 
+  async function updateFood(id: String, food: IUpdateFoodRequest): Promise<{} | null> {
+    setIsLoading(true);
+    setErrorMessage("");
+
+    let response: Response = await fetch(
+      `/api/food/${id}?access_token=${ACCESS_TOKEN}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(food),
+      }
+    );
+
+    if (response.ok) {
+      setIsLoading(false);
+
+      return {};
+    } else {
+      setIsLoading(false);
+
+      const data = (await response.json()) as IErrorMessage;
+      setErrorMessage(data.reason);
+      return null;
+    }
+  }
+
   async function getFoodList(): Promise<IGetFoodListResponse | null> {
     setIsLoading(true);
     setErrorMessage("");
@@ -146,6 +173,7 @@ export default function useApi(): UseApiHandler {
     getUserInfo,
     addFood,
     getFood,
+    updateFood,
     getFoodList,
   };
 }

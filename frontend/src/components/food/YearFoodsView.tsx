@@ -1,6 +1,5 @@
 import { ReactElement } from "react";
 import { MonthFoods, monthToSortedArray } from "../../model/Foods";
-import styles from "./YearFoodsView.module.css"
 import MonthFoodsView from "./MonthFoodsView";
 
 export default function YearFoodsView(props: {
@@ -10,8 +9,8 @@ export default function YearFoodsView(props: {
 }): ReactElement {
     return (
         <>
-            <div className={styles.container.toString()}>
-                <h1>Year: {props.year}</h1>
+            <div className="card m-2 p-2">
+                <h1 className="card-header">Year: {props.year}</h1>
                 {props.foods.map((month: MonthFoods) => {
                     return (
                         <MonthFoodsView

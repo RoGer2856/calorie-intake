@@ -57,11 +57,23 @@ export default function MyFoods(props: {
             {showAddFood
                 ?
                 <>
-                    <button onClick={hideAddFoodHandler}>Close</button>
-                    <AddFoodForm onFoodAdded={foodAddedHandler} />
+                    <button
+                        className="btn btn-primary"
+                        onClick={hideAddFoodHandler}
+                    >
+                        Close
+                    </button>
+                    <div className="card p-2 m-2">
+                        <AddFoodForm onFoodAdded={foodAddedHandler} />
+                    </div>
                 </>
                 :
-                <button onClick={showAddFoodHandler}>Add food</button>}
+                <button
+                    className="btn btn-primary"
+                    onClick={showAddFoodHandler}
+                >
+                    Add food
+                </button>}
 
             {allFoodsToSortedArray(foods).map((year: YearFoods) => {
                 return (

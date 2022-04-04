@@ -2,7 +2,6 @@ import { ReactElement } from "react";
 import { DayFoods } from "../../model/Foods";
 import { monthIndexToMonthName } from "../../utils/time";
 import DayFoodsView from "./DayFoodsView";
-import styles from "./MonthFoodsView.module.css"
 
 export default function MonthFoodsView(props: {
     maxCaloriesPerDay: number,
@@ -11,9 +10,9 @@ export default function MonthFoodsView(props: {
 }): ReactElement {
     return (
         <>
-            <div className={styles.frame.toString()}>
-                <h1>{monthIndexToMonthName(props.month)}</h1>
-                <div className={styles.container.toString()}>
+            <div className="card p-2 my-2">
+                <h1 className="card-header">{monthIndexToMonthName(props.month)}</h1>
+                <div className="d-flex flex-row flex-wrap p-1">
                     {props.foods.map((day: DayFoods) => {
                         return (
                             <DayFoodsView

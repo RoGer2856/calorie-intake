@@ -45,8 +45,11 @@ export default function AddFoodForm(props: {
             <h1>Add food</h1>
             <form onSubmit={submitHandler}>
                 <div>
-                    <label htmlFor="name">What did you eat?</label>
+                    <label
+                        htmlFor="name"
+                        className="form-label">What did you eat?</label>
                     <input
+                        className="form-control"
                         type='text'
                         id='name'
                         value={nameInput.value}
@@ -57,8 +60,11 @@ export default function AddFoodForm(props: {
                 </div>
 
                 <div>
-                    <label>How much calories did you eat?</label>
+                    <label
+                        htmlFor="calories"
+                        className="form-label">How much calories did you eat?</label>
                     <input
+                        className="form-control"
                         type='number'
                         id='calories'
                         value={caloriesInput.value}
@@ -69,8 +75,11 @@ export default function AddFoodForm(props: {
                 </div>
 
                 <div>
-                    <label>When did you eat it?</label>
+                    <label
+                        htmlFor="time"
+                        className="form-label">When did you eat it (UTC timezone)?</label>
                     <input
+                        className="form-control"
                         type='datetime-local'
                         id='time'
                         value={timeInput.value}
@@ -80,7 +89,18 @@ export default function AddFoodForm(props: {
                     />
                 </div>
 
-                <button type="submit">Add food</button>
+                <button
+                    className="btn btn-primary"
+                    type="submit"
+                >
+                    Add food
+                </button>
+
+                {api.errorMessage === ""
+                    ?
+                    <></>
+                    :
+                    <p className="alert alert-danger">{api.errorMessage}</p>}
             </form>
         </>
     );

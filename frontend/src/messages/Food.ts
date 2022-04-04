@@ -19,6 +19,12 @@ export interface IFoodResponse {
     time: string,
 }
 
+export interface IUpdateFoodRequest {
+    name: string | null,
+    calories: number | null,
+    time: string | null,
+}
+
 export interface IFoodRequest {
     name: string,
     calories: number,

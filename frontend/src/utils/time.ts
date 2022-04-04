@@ -20,7 +20,17 @@ export function datetimeLocalInputToRfc3339(dateTimeLocalInput: string) {
     );
   }
 
-  return dateTimeLocalInput + ":00" + getRfc3339TimezoneOffset();
+  return dateTimeLocalInput + getRfc3339TimezoneOffset();
+}
+
+export function dateToDatetimeLocalInput(dt: Date) {
+  const timeZoneOffsetInSeconds = new Date().getTimezoneOffset();
+
+  let new_dt = new Date(dt);
+  new_dt.setMinutes(new_dt.getMinutes() - timeZoneOffsetInSeconds);
+
+  let isoStr = new_dt.toISOString();
+  return isoStr.substring(0, isoStr.length - 1);
 }
 
 export function monthIndexToMonthName(month: number): string {
