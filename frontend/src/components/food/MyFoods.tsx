@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ReactElement } from "react";
 import useApi from '../../hooks/use-api';
-import { IGetFoodListResponse } from '../../messages/Food';
-import { AllFoods, YearFoods } from '../../model/Foods';
+import { addFoodToAll, AllFoods, allFoodsToSortedArray, createAllFoods, YearFoods, yearToSortedArray } from '../../model/Foods';
 import AddFoodForm from './AddFoodForm';
 import YearFoodsView from './YearFoodsView';
 
@@ -11,17 +10,20 @@ export default function MyFoods(props: {
 }): ReactElement {
     const api = useApi();
 
-    const [allFoods, setAllFoods] = useState<AllFoods>(new AllFoods());
+    const [foods, setFoods] = useState(createAllFoods());
+
+    const [showAddFood, setShowAddFood] = useState(false);
 
     let fetchFoods = useCallback(async function () {
         let response = await api.getFoodList();
         if (response !== null) {
-            let data = response as IGetFoodListResponse;
-            let foods = new AllFoods();
-            for (const food of data.foods) {
-                foods.addFood(food);
-            }
-            setAllFoods(foods);
+            setFoods((state: AllFoods) => {
+                let foods = createAllFoods();
+                for (const food of response!.foods) {
+                    addFoodToAll(foods, food);
+                }
+                return foods;
+            })
         }
     }, []);
 
@@ -30,24 +32,47 @@ export default function MyFoods(props: {
     }, [fetchFoods]);
 
     async function foodAddedHandler(id: string) {
-        fetchFoods();
-        console.log(id);
+        let response = await api.getFoodList();
+        if (response !== null) {
+            setFoods((state: AllFoods) => {
+                let foods = createAllFoods();
+                for (const food of response!.foods) {
+                    addFoodToAll(foods, food);
+                }
+                return foods;
+            })
+        }
+    }
+
+    function showAddFoodHandler() {
+        setShowAddFood(true);
+    }
+
+    function hideAddFoodHandler() {
+        setShowAddFood(false);
     }
 
     return (
         <>
-            <AddFoodForm onFoodAdded={foodAddedHandler} />
+            {showAddFood
+                ?
+                <>
+                    <button onClick={hideAddFoodHandler}>Close</button>
+                    <AddFoodForm onFoodAdded={foodAddedHandler} />
+                </>
+                :
+                <button onClick={showAddFoodHandler}>Add food</button>}
 
-            {allFoods.toSortedArray().map((year: YearFoods) => {
-                    return (
-                        <YearFoodsView
-                            key={year.year}
-                            maxCaloriesPerDay={props.maxCaloriesPerDay}
-                            year={year.year}
-                            foods={year.toSortedArray()}
-                        />
-                    );
-                })}
+            {allFoodsToSortedArray(foods).map((year: YearFoods) => {
+                return (
+                    <YearFoodsView
+                        key={year.year}
+                        maxCaloriesPerDay={props.maxCaloriesPerDay}
+                        year={year.year}
+                        foods={yearToSortedArray(year)}
+                    />
+                );
+            })}
         </>
     );
 }

@@ -1,101 +1,116 @@
 import { IFoodResponse } from "../messages/Food";
 
-export class DayFoods {
-  dateOfMonth: number;
-  dayOfTheWeek: number;
-  foods: IFoodResponse[] = [];
-
-  constructor(dateOfMonth: number, dayOfTheWeek: number) {
-    this.dateOfMonth = dateOfMonth;
-    this.dayOfTheWeek = dayOfTheWeek;
-  }
-
-  addFood(food: IFoodResponse) {
-    this.foods.push(food);
-    this.foods.sort((a: IFoodResponse, b: IFoodResponse) => {
-      const aDt = Date.parse(a.time);
-      const bDt = Date.parse(b.time);
-      return aDt > bDt ? 1 : -1;
-    });
-  }
+export interface DayFoods {
+  dateOfMonth: number,
+  dayOfTheWeek: number,
+  foods: IFoodResponse[],
 }
 
-export class MonthFoods {
+export function createDayFoods(dateOfMonth: number, dayOfTheWeek: number): DayFoods {
+  return {
+    dateOfMonth,
+    dayOfTheWeek,
+    foods: [],
+  };
+}
+
+export function addFoodToDay(foods: DayFoods, food: IFoodResponse) {
+  foods.foods.push(food);
+  foods.foods.sort((a: IFoodResponse, b: IFoodResponse) => {
+    const aDt = Date.parse(a.time);
+    const bDt = Date.parse(b.time);
+    return aDt > bDt ? 1 : -1;
+  });
+}
+
+export interface MonthFoods {
   month: number;
-  days: { [day: number]: DayFoods } = {};
-
-  constructor(month: number) {
-    this.month = month;
-  }
-
-  addFood(food: IFoodResponse) {
-    const dt = new Date(Date.parse(food.time));
-    const dateOfMonth = dt.getDate();
-    const dayOfTheWeek = dt.getDay();
-
-    if (!(dateOfMonth in this.days)) {
-      this.days[dateOfMonth] = new DayFoods(dateOfMonth, dayOfTheWeek);
-    }
-
-    this.days[dateOfMonth].addFood(food);
-  }
-
-  toSortedArray(): DayFoods[] {
-    let ret = Object.values(this.days);
-    ret.sort((a: DayFoods, b: DayFoods) => {
-      return a.dateOfMonth < b.dateOfMonth ? 1 : -1;
-    });
-    return ret;
-  }
+  days: { [day: number]: DayFoods };
 }
 
-export class YearFoods {
+export function createMonthFoods(month: number): MonthFoods {
+  return {
+    month,
+    days: {},
+  };
+}
+
+export function addFoodToMonth(foods: MonthFoods, food: IFoodResponse) {
+  const dt = new Date(Date.parse(food.time));
+  const dateOfMonth = dt.getDate();
+  const dayOfTheWeek = dt.getDay();
+
+  if (!(dateOfMonth in foods.days)) {
+    foods.days[dateOfMonth] = createDayFoods(dateOfMonth, dayOfTheWeek);
+  }
+
+  addFoodToDay(foods.days[dateOfMonth], food);
+}
+
+export function monthToSortedArray(foods: MonthFoods): DayFoods[] {
+  let ret = Object.values(foods.days);
+  ret.sort((a: DayFoods, b: DayFoods) => {
+    return a.dateOfMonth < b.dateOfMonth ? 1 : -1;
+  });
+  return ret;
+}
+
+export interface YearFoods {
   year: number;
-  months: { [month: number]: MonthFoods } = {};
-
-  constructor(year: number) {
-    this.year = year;
-  }
-
-  addFood(food: IFoodResponse) {
-    const dt = new Date(Date.parse(food.time));
-    const month = dt.getMonth();
-
-    if (!(month in this.months)) {
-      this.months[month] = new MonthFoods(month);
-    }
-
-    this.months[month].addFood(food);
-  }
-
-  toSortedArray(): MonthFoods[] {
-    let ret = Object.values(this.months);
-    ret.sort((a: MonthFoods, b: MonthFoods) => {
-      return a.month < b.month ? 1 : -1;
-    });
-    return ret;
-  }
+  months: { [month: number]: MonthFoods };
 }
 
-export class AllFoods {
-  years: YearFoods[] = [];
+export function createYearFoods(year: number): YearFoods {
+  return {
+    year,
+    months: {},
+  };
+}
 
-  addFood(food: IFoodResponse) {
-    const dt = new Date(Date.parse(food.time));
-    const year = dt.getFullYear();
+export function addFoodToYear(foods: YearFoods, food: IFoodResponse) {
+  const dt = new Date(Date.parse(food.time));
+  const month = dt.getMonth();
 
-    if (!(year in this.years)) {
-      this.years[year] = new YearFoods(year);
-    }
-
-    this.years[year].addFood(food);
+  if (!(month in foods.months)) {
+    foods.months[month] = createMonthFoods(month);
   }
 
-  toSortedArray(): YearFoods[] {
-    let ret = Object.values(this.years);
-    ret.sort((a: YearFoods, b: YearFoods) => {
-      return a.year < b.year ? 1 : -1;
-    });
-    return ret;
+  addFoodToMonth(foods.months[month], food);
+}
+
+export function yearToSortedArray(foods: YearFoods): MonthFoods[] {
+  let ret = Object.values(foods.months);
+  ret.sort((a: MonthFoods, b: MonthFoods) => {
+    return a.month < b.month ? 1 : -1;
+  });
+  return ret;
+}
+
+export interface AllFoods {
+  years: YearFoods[];
+}
+
+export function createAllFoods(): AllFoods {
+  return {
+    years: [],
+  };
+}
+
+export function addFoodToAll(foods: AllFoods, food: IFoodResponse) {
+  const dt = new Date(Date.parse(food.time));
+  const year = dt.getFullYear();
+
+  if (!(year in foods.years)) {
+    foods.years[year] = createYearFoods(year);
   }
+
+  addFoodToYear(foods.years[year], food);
+}
+
+export function allFoodsToSortedArray(foods: AllFoods): YearFoods[] {
+  let ret = Object.values(foods.years);
+  ret.sort((a: YearFoods, b: YearFoods) => {
+    return a.year < b.year ? 1 : -1;
+  });
+  return ret;
 }

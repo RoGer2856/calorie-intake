@@ -4,6 +4,7 @@ import {
   IAddFoodResponse,
   IErrorMessage,
   IFoodRequest,
+  IFoodResponse,
   IGetFoodListResponse,
   IGetUserInfoResponse,
 } from "../messages/Food";
@@ -14,6 +15,7 @@ export type UseApiHandler = {
   errorMessage: string;
   getUserInfo: () => Promise<IUserInfo | null>;
   addFood: (food: IFoodRequest) => Promise<IAddFoodResponse | null>;
+  getFood(id: String): Promise<IFoodResponse | null>;
   getFoodList: () => Promise<IGetFoodListResponse | null>;
 };
 
@@ -90,6 +92,30 @@ export default function useApi(): UseApiHandler {
     }
   }
 
+  async function getFood(id: String): Promise<IFoodResponse | null> {
+    setIsLoading(true);
+    setErrorMessage("");
+
+    let response: Response = await fetch(
+      `/api/food/${id}?access_token=${ACCESS_TOKEN}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (response.ok) {
+      setIsLoading(false);
+
+      return (await response.json()) as IFoodResponse;
+    } else {
+      setIsLoading(false);
+
+      const data = (await response.json()) as IErrorMessage;
+      setErrorMessage(data.reason);
+      return null;
+    }
+  }
+
   async function getFoodList(): Promise<IGetFoodListResponse | null> {
     setIsLoading(true);
     setErrorMessage("");
@@ -119,6 +145,7 @@ export default function useApi(): UseApiHandler {
     errorMessage,
     getUserInfo,
     addFood,
+    getFood,
     getFoodList,
   };
 }

@@ -4,7 +4,7 @@ import useInput from "../../hooks/use-input";
 import { IAddFoodResponse, IFoodRequest } from "../../messages/Food";
 import { datetimeLocalInputToRfc3339 } from "../../utils/time";
 
-export default function AddFoodForm(props: {
+export default function EditFoodForm(props: {
     onFoodAdded: (id: string) => void,
 }): ReactElement {
     const api = useApi();
@@ -45,7 +45,6 @@ export default function AddFoodForm(props: {
             <h1>Add food</h1>
             <form onSubmit={submitHandler}>
                 <div>
-                    <label htmlFor="name">What did you eat?</label>
                     <input
                         type='text'
                         id='name'
@@ -57,7 +56,6 @@ export default function AddFoodForm(props: {
                 </div>
 
                 <div>
-                    <label>How much calories did you eat?</label>
                     <input
                         type='number'
                         id='calories'
@@ -66,10 +64,10 @@ export default function AddFoodForm(props: {
                         onBlur={caloriesInput.inputBlurHandler}
                         required
                     />
+                    kcal
                 </div>
 
                 <div>
-                    <label>When did you eat it?</label>
                     <input
                         type='datetime-local'
                         id='time'
@@ -80,7 +78,7 @@ export default function AddFoodForm(props: {
                     />
                 </div>
 
-                <button type="submit">Add food</button>
+                <button type="submit">Save</button>
             </form>
         </>
     );
