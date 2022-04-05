@@ -85,3 +85,13 @@ impl From<FoodStorageError> for ErrorResponse {
         }
     }
 }
+
+impl From<UserInfoStorageError> for ErrorResponse {
+    fn from(e: UserInfoStorageError) -> Self {
+        match e {
+            UserInfoStorageError::InternalError => {
+                ErrorResponse::from_status_code(hyper::StatusCode::INTERNAL_SERVER_ERROR)
+            }
+        }
+    }
+}

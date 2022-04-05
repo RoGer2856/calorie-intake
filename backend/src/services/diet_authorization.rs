@@ -7,7 +7,7 @@ struct SecretConfig {
     secret_key: String,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub enum RoleType {
     Admin,
     RegularUser,
@@ -73,6 +73,7 @@ pub struct DietAuthorization {
     jwt_manager: crate::utils::JwtManager,
 }
 
+#[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Clone)]
 pub struct AuthorizationInfo {
     pub username: String,
     pub role: RoleType,

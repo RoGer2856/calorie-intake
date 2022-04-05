@@ -108,7 +108,7 @@ async fn get_user_list_as_admin() {
 
             let resp = api_client.get_user_list(&access_token_admin).await.unwrap();
 
-            assert_eq!(resp.object.users.len(), 2);
+            assert_eq!(resp.object.users.len(), 3);
         },
     )
     .await;

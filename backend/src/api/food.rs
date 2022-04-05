@@ -33,16 +33,8 @@ pub mod messages {
 pub async fn add_food(
     req: hyper::Request<hyper::Body>,
     app_context: crate::AppContext,
+    authz_info: crate::services::AuthorizationInfo,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
-    let access_token =
-        crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
-
-    let authz_info = app_context
-        .authorization
-        .lock()
-        .await
-        .verify_jwt(&access_token)?;
-
     let mut deserializer = crate::hyper_helpers::Deserializer::new();
     let payload = deserializer
         .read_request_as_json::<messages::AddFoodRequest>(req)
@@ -66,18 +58,10 @@ pub async fn add_food(
 }
 
 pub async fn get_food_list(
-    req: hyper::Request<hyper::Body>,
+    _req: hyper::Request<hyper::Body>,
     app_context: crate::AppContext,
+    authz_info: crate::services::AuthorizationInfo,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
-    let access_token =
-        crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
-
-    let authz_info = app_context
-        .authorization
-        .lock()
-        .await
-        .verify_jwt(&access_token)?;
-
     let mut food_storage = app_context.food_storage.lock().await;
 
     let food_storage = food_storage.get_food_storage_for_user(authz_info.username);
@@ -94,19 +78,11 @@ pub async fn get_food_list(
 }
 
 pub async fn get_food_list_of(
-    req: hyper::Request<hyper::Body>,
+    _req: hyper::Request<hyper::Body>,
     app_context: crate::AppContext,
+    authz_info: crate::services::AuthorizationInfo,
     username: String,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
-    let access_token =
-        crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
-
-    let authz_info = app_context
-        .authorization
-        .lock()
-        .await
-        .verify_jwt(&access_token)?;
-
     match authz_info.role {
         RoleType::Admin => {
             let mut food_storage = app_context.food_storage.lock().await;
@@ -130,19 +106,11 @@ pub async fn get_food_list_of(
 }
 
 pub async fn get_food(
-    req: hyper::Request<hyper::Body>,
+    _req: hyper::Request<hyper::Body>,
     app_context: crate::AppContext,
+    authz_info: crate::services::AuthorizationInfo,
     food_id: String,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
-    let access_token =
-        crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
-
-    let authz_info = app_context
-        .authorization
-        .lock()
-        .await
-        .verify_jwt(&access_token)?;
-
     let mut food_storage = app_context.food_storage.lock().await;
 
     let food_id = &crate::services::FoodId(food_id);
@@ -174,17 +142,9 @@ pub async fn get_food(
 pub async fn update_food(
     req: hyper::Request<hyper::Body>,
     app_context: crate::AppContext,
+    authz_info: crate::services::AuthorizationInfo,
     food_id: String,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
-    let access_token =
-        crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
-
-    let authz_info = app_context
-        .authorization
-        .lock()
-        .await
-        .verify_jwt(&access_token)?;
-
     match authz_info.role {
         RoleType::Admin => {
             let mut deserializer = crate::hyper_helpers::Deserializer::new();
@@ -215,19 +175,11 @@ pub async fn update_food(
 }
 
 pub async fn delete_food(
-    req: hyper::Request<hyper::Body>,
+    _req: hyper::Request<hyper::Body>,
     app_context: crate::AppContext,
+    authz_info: crate::services::AuthorizationInfo,
     food_id: String,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
-    let access_token =
-        crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
-
-    let authz_info = app_context
-        .authorization
-        .lock()
-        .await
-        .verify_jwt(&access_token)?;
-
     match authz_info.role {
         RoleType::Admin => {
             let food_storage = app_context.food_storage.lock().await;
@@ -249,18 +201,10 @@ pub async fn delete_food(
 }
 
 pub async fn get_report(
-    req: hyper::Request<hyper::Body>,
+    _req: hyper::Request<hyper::Body>,
     app_context: crate::AppContext,
+    authz_info: crate::services::AuthorizationInfo,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
-    let access_token =
-        crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
-
-    let authz_info = app_context
-        .authorization
-        .lock()
-        .await
-        .verify_jwt(&access_token)?;
-
     match authz_info.role {
         RoleType::Admin => {
             let datetime_now = crate::utils::time::current_day_start_local();

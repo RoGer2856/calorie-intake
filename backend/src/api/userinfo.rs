@@ -10,28 +10,26 @@ pub mod messages {
 
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct GetUserListResponse {
-        pub users: Vec<String>,
+        pub users: Vec<GetUserInfoResponse>,
+    }
+
+    impl From<crate::services::UserInfo> for GetUserInfoResponse {
+        fn from(userinfo: crate::services::UserInfo) -> Self {
+            Self {
+                username: userinfo.username,
+                role: userinfo.role.to_string(),
+                max_calories_per_day: userinfo.max_calories_per_day,
+            }
+        }
     }
 }
 
 pub async fn get_userinfo(
-    req: hyper::Request<hyper::Body>,
-    app_context: crate::AppContext,
+    _req: hyper::Request<hyper::Body>,
+    _app_context: crate::AppContext,
+    authz_info: crate::services::AuthorizationInfo,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
-    let access_token =
-        crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
-
-    let authz_info = app_context
-        .authorization
-        .lock()
-        .await
-        .verify_jwt(&access_token)?;
-
-    let resp_msg = messages::GetUserInfoResponse {
-        username: authz_info.username,
-        role: authz_info.role.to_string(),
-        max_calories_per_day: authz_info.max_calories_per_day,
-    };
+    let resp_msg = messages::GetUserInfoResponse::from(authz_info);
 
     Ok(crate::hyper_helpers::create_json_response(
         hyper::StatusCode::OK,
@@ -40,27 +38,20 @@ pub async fn get_userinfo(
 }
 
 pub async fn get_user_list(
-    req: hyper::Request<hyper::Body>,
+    _req: hyper::Request<hyper::Body>,
     app_context: crate::AppContext,
+    authz_info: crate::services::AuthorizationInfo,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
-    let access_token =
-        crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
-
-    let authz_info = app_context
-        .authorization
-        .lock()
-        .await
-        .verify_jwt(&access_token)?;
-
     match authz_info.role {
         RoleType::Admin => {
-            let mut resp_msg = messages::GetUserListResponse { users: Vec::new() };
+            let mut userinfo_storage = app_context.userinfo_storage.lock().await;
 
-            let food_storage = app_context.food_storage.lock().await;
-
-            for (username, _user_food_storage) in food_storage.user_storages_iter() {
-                resp_msg.users.push(username.clone());
-            }
+            let resp_msg = messages::GetUserListResponse {
+                users: userinfo_storage
+                    .iter_userinfo()?
+                    .map(|userinfo| messages::GetUserInfoResponse::from(userinfo))
+                    .collect(),
+            };
 
             Ok(crate::hyper_helpers::create_json_response(
                 hyper::StatusCode::OK,

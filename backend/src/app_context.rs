@@ -12,6 +12,7 @@ pub struct AppContext {
     pub config: Arc<Mutex<Box<dyn crate::Config>>>,
     pub authorization: Arc<Mutex<DietAuthorization>>,
     pub food_storage: std::sync::Arc<Mutex<FoodStorageHelper>>,
+    pub userinfo_storage: std::sync::Arc<Mutex<Box<dyn UserInfoStorage>>>,
 }
 
 impl AppContext {
@@ -23,6 +24,9 @@ impl AppContext {
                 DietAuthorization::new(secrets_file_location).unwrap(),
             )),
             food_storage: std::sync::Arc::new(Mutex::new(FoodStorageHelper::new())),
+            userinfo_storage: std::sync::Arc::new(Mutex::new(Box::new(
+                InMemoryUserInfoStorage::new(),
+            ))),
         }
     }
 
