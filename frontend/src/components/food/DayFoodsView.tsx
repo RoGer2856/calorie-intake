@@ -3,6 +3,9 @@ import { IFoodResponse } from "../../messages/Food";
 import FoodView from "./FoodView";
 import { dayOfTheWeekToDayName, monthIndexToMonthName } from "../../utils/time";
 import EditFoodForm from "./EditFoodForm";
+import { IUserInfoState } from "../../store/user-info";
+import { useSelector } from "react-redux";
+import { Role } from "../../model/UserInfo";
 
 export default function DayFoodsView(props: {
     maxCaloriesPerDay: number,
@@ -12,6 +15,8 @@ export default function DayFoodsView(props: {
     foods: IFoodResponse[],
 }): ReactElement {
     let [foodIdUnderEditing, setFoodIdUnderEditing] = useState<String | null>(null);
+
+    const userInfo = useSelector((state: { userInfo: IUserInfoState }) => state.userInfo.userInfo);
 
     let calories = 0;
     for (const food of props.foods) {
@@ -68,13 +73,18 @@ export default function DayFoodsView(props: {
                                 <ul className="list-group list-group-flush">
                                     <li className="list-group-item">
                                         <FoodView food={food} />
-                                        <button
-                                            className="btn btn-primary"
-                                            type="button"
-                                            onClick={(e) => editHandler(food.id)}
-                                        >
-                                            Edit
-                                        </button>
+                                        {userInfo?.role === Role.Admin
+                                            ?
+                                            <button
+                                                className="btn btn-primary"
+                                                type="button"
+                                                onClick={(e) => editHandler(food.id)}
+                                            >
+                                                Edit
+                                            </button>
+                                            :
+                                            <></>
+                                        }
                                     </li>
                                 </ul>
                             </div>

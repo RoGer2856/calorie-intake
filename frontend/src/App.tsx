@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import AdminApp from './components/admin/AdminApp';
 import Loading from './components/Loading';
 import RegularUserApp from './components/regular_user/RegularUserApp';
 import UseApiView from './components/UseApiView';
 import useApi from './hooks/use-api';
 import { IUserInfo, Role } from './model/UserInfo';
+import { userInfoActions } from './store/user-info';
 
 function App() {
   const api = useApi();
+
+  const dispatch = useDispatch();
 
   const [userInfo, setUserInfo] = useState<IUserInfo | null>(null);
 
@@ -15,6 +19,7 @@ function App() {
     let response = await api.getUserInfo();
     if (response !== null) {
       setUserInfo(response as IUserInfo);
+      dispatch(userInfoActions.setUserinfo(response as IUserInfo));
     }
   }, []);
 

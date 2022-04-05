@@ -7,13 +7,17 @@ import { BrowserRouter } from 'react-router-dom';
 import 'jquery/dist/jquery.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
+import { Provider } from 'react-redux';
+import store from './store';
 
 const rootNode = document.getElementById('root');
 if (rootNode) {
   ReactDOM.createRoot(rootNode).render(
     <React.StrictMode>
       <BrowserRouter>
-        <App />
+        <Provider store={store}>
+          <App />
+        </Provider>
       </BrowserRouter>
     </React.StrictMode>
   );
