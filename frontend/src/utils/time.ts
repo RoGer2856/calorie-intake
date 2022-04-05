@@ -30,7 +30,7 @@ export function dateToDatetimeLocalInput(dt: Date) {
   new_dt.setMinutes(new_dt.getMinutes() - timeZoneOffsetInSeconds);
 
   let isoStr = new_dt.toISOString();
-  return isoStr.substring(0, isoStr.length - 1);
+  return isoStr.substring(0, isoStr.length - 8);
 }
 
 export function monthIndexToMonthName(month: number): string {

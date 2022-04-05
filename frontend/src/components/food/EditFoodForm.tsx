@@ -3,14 +3,17 @@ import useApi from "../../hooks/use-api";
 import useInput from "../../hooks/use-input";
 import { IFoodResponse, IUpdateFoodRequest } from "../../messages/Food";
 import { datetimeLocalInputToRfc3339, dateToDatetimeLocalInput } from "../../utils/time";
-import ErrorView from "../ErrorView";
 import UseApiView from "../UseApiView";
 
-export default function EditFoodForm(props: {
-    food: IFoodResponse,
+export interface IEditEvents {
     onEdited: (id: string) => void,
     onCancelled: (id: string) => void,
     onDeleted: (id: string) => void,
+}
+
+export default function EditFoodForm(props: {
+    food: IFoodResponse,
+    onEditEvent: IEditEvents,
 }): ReactElement {
     const api = useApi();
 
@@ -43,18 +46,18 @@ export default function EditFoodForm(props: {
 
         let response = await api.updateFood(props.food.id, food);
         if (response !== null) {
-            props.onEdited(props.food.id);
+            props.onEditEvent.onEdited(props.food.id);
         }
     }
 
     function cancelHandler() {
-        props.onCancelled(props.food.id);
+        props.onEditEvent.onCancelled(props.food.id);
     }
 
     async function deleteHandler() {
         let response = await api.deleteFood(props.food.id);
         if (response !== null) {
-            props.onDeleted(props.food.id);
+            props.onEditEvent.onDeleted(props.food.id);
         }
     }
 

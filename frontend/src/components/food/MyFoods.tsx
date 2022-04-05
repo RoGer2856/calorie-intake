@@ -3,6 +3,7 @@ import { ReactElement } from "react";
 import useApi from '../../hooks/use-api';
 import { addFoodToAll, AllFoods, allFoodsToSortedArray, createAllFoods, YearFoods, yearToSortedArray } from '../../model/Foods';
 import AddFoodForm from './AddFoodForm';
+import { IEditEvents } from './EditFoodForm';
 import YearFoodsView from './YearFoodsView';
 
 export default function MyFoods(props: {
@@ -11,8 +12,18 @@ export default function MyFoods(props: {
     const api = useApi();
 
     const [foods, setFoods] = useState(createAllFoods());
-
     const [showAddFood, setShowAddFood] = useState(false);
+
+    const editEventHandler: IEditEvents = {
+        onEdited: async (id: String) => {
+            await fetchFoods();
+        },
+        onCancelled: (id: String) => {
+        },
+        onDeleted: async (id: String) => {
+            await fetchFoods();
+        }
+    };
 
     let fetchFoods = useCallback(async function () {
         let response = await api.getFoodList();
@@ -82,6 +93,7 @@ export default function MyFoods(props: {
                         maxCaloriesPerDay={props.maxCaloriesPerDay}
                         year={year.year}
                         foods={yearToSortedArray(year)}
+                        onEditEvent={editEventHandler}
                     />
                 );
             })}

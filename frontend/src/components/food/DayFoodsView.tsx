@@ -2,7 +2,7 @@ import { ReactElement, useState } from "react";
 import { IFoodResponse } from "../../messages/Food";
 import FoodView from "./FoodView";
 import { dayOfTheWeekToDayName, monthIndexToMonthName } from "../../utils/time";
-import EditFoodForm from "./EditFoodForm";
+import EditFoodForm, { IEditEvents } from "./EditFoodForm";
 import { IUserInfoState } from "../../store/user-info";
 import { useSelector } from "react-redux";
 import { Role } from "../../model/UserInfo";
@@ -13,6 +13,7 @@ export default function DayFoodsView(props: {
     dateOfMonth: number,
     dayOfTheWeek: number,
     foods: IFoodResponse[],
+    onEditEvent: IEditEvents,
 }): ReactElement {
     let [foodIdUnderEditing, setFoodIdUnderEditing] = useState<String | null>(null);
 
@@ -29,17 +30,20 @@ export default function DayFoodsView(props: {
         setFoodIdUnderEditing(foodId);
     }
 
-    function foodEditedHandler(id: string) {
-        setFoodIdUnderEditing(null);
-    }
-
-    function foodEditCancelledHandler(id: string) {
-        setFoodIdUnderEditing(null);
-    }
-
-    function foodDeletedHandler(id: string) {
-        setFoodIdUnderEditing(null);
-    }
+    const editEventHandler: IEditEvents = {
+        onEdited: (id: string) => {
+            setFoodIdUnderEditing(null);
+            props.onEditEvent.onEdited(id);
+        },
+        onCancelled: (id: string) => {
+            setFoodIdUnderEditing(null);
+            props.onEditEvent.onCancelled(id);
+        },
+        onDeleted: (id: string) => {
+            setFoodIdUnderEditing(null);
+            props.onEditEvent.onDeleted(id);
+        }
+    };
 
     return (
         <>
@@ -61,9 +65,7 @@ export default function DayFoodsView(props: {
                             <div key={food.id}>
                                 <EditFoodForm
                                     food={food}
-                                    onEdited={foodEditedHandler}
-                                    onCancelled={foodEditCancelledHandler}
-                                    onDeleted={foodDeletedHandler}
+                                    onEditEvent={editEventHandler}
                                 />
                             </div>
                         );
