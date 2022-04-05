@@ -39,6 +39,7 @@ impl From<DietAuthorizationError> for ErrorResponse {
             DietAuthorizationError::InvalidRoleStringError(_) => hyper::StatusCode::BAD_REQUEST,
             DietAuthorizationError::InvalidJwtReceivedError => hyper::StatusCode::BAD_REQUEST,
             DietAuthorizationError::ParseIntError => hyper::StatusCode::INTERNAL_SERVER_ERROR,
+            DietAuthorizationError::CouldNotParseRoleError(_) => hyper::StatusCode::BAD_REQUEST,
         };
 
         if status == hyper::StatusCode::BAD_REQUEST {

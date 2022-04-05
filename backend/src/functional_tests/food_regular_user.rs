@@ -164,7 +164,7 @@ async fn update_food() {
                 id: None,
                 name: Some("new name".into()),
                 calories: Some(0),
-                time: Some("new time".into()),
+                time: chrono::Local::now().into(),
             };
             assert!(api_client
                 .update_food_by_id(&access_token, id_to_update, &updated_food)

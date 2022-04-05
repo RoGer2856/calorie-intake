@@ -1,26 +1,11 @@
 use crate::services::RoleType;
 
 pub mod messages {
-    #[derive(Debug, serde::Serialize, serde::Deserialize)]
-    pub struct GetUserInfoResponse {
-        pub username: String,
-        pub role: String,
-        pub max_calories_per_day: u16,
-    }
+    pub type GetUserInfoResponse = crate::services::UserInfo;
 
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct GetUserListResponse {
         pub users: Vec<GetUserInfoResponse>,
-    }
-
-    impl From<crate::services::UserInfo> for GetUserInfoResponse {
-        fn from(userinfo: crate::services::UserInfo) -> Self {
-            Self {
-                username: userinfo.username,
-                role: userinfo.role.to_string(),
-                max_calories_per_day: userinfo.max_calories_per_day,
-            }
-        }
     }
 }
 

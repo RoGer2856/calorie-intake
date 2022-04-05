@@ -27,7 +27,7 @@ async fn get_regular_user_info() {
             let resp = api_client.get_userinfo(&access_token).await.unwrap();
 
             assert_eq!(resp.object.username, username);
-            assert_eq!(resp.object.role, role.to_string());
+            assert_eq!(resp.object.role, role);
         },
     )
     .await;
@@ -59,7 +59,7 @@ async fn get_admin_user_info() {
             let resp = api_client.get_userinfo(&access_token).await.unwrap();
 
             assert_eq!(resp.object.username, username);
-            assert_eq!(resp.object.role, role.to_string());
+            assert_eq!(resp.object.role, role);
             assert_eq!(resp.object.max_calories_per_day, max_calories_per_day);
         },
     )

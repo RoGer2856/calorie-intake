@@ -88,7 +88,7 @@ mod test {
             id: None,
             name: Some("Hamburger".into()),
             calories: Some(600),
-            time: Some("2022 March 2 8:0".into()),
+            time: chrono::Local::now().into(),
         };
 
         // add food for john
@@ -102,7 +102,7 @@ mod test {
             id: None,
             name: Some("Chicken".into()),
             calories: Some(300),
-            time: Some("2022 March 2 12:00".into()),
+            time: chrono::Local::now().into(),
         };
 
         // add food for jane

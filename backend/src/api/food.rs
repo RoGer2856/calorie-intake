@@ -223,20 +223,12 @@ pub async fn get_report(
 
                 let mut user_food_storage = user_food_storage.lock().await;
                 for food in user_food_storage.iter_food()? {
-                    if let Ok(food_datetime) = food.get_date_time() {
-                        if food_datetime >= datetime_1_week_before {
-                            food_entries_added_last_week += 1;
-                            calories_sum += food.calories;
-                        } else if food_datetime >= datetime_2_week_before {
-                            food_entries_added_week_before_last_week += 1;
-                        }
-                    } else {
-                        log::error!("Could not parse time");
-                        return Err(crate::hyper_helpers::ErrorResponse(
-                            crate::hyper_helpers::response_from_status_code(
-                                hyper::StatusCode::INTERNAL_SERVER_ERROR,
-                            ),
-                        ));
+                    let food_datetime = food.get_date_time();
+                    if *food_datetime >= datetime_1_week_before {
+                        food_entries_added_last_week += 1;
+                        calories_sum += food.calories;
+                    } else if *food_datetime >= datetime_2_week_before {
+                        food_entries_added_week_before_last_week += 1;
                     }
                 }
             }

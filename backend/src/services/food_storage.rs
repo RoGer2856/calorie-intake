@@ -4,12 +4,92 @@ pub enum FoodFromPartialError {
     MissingField(String),
 }
 
+pub struct CouldNotParseTimeError(pub String);
+
+impl From<crate::utils::time::DateTimeFromStrError> for CouldNotParseTimeError {
+    fn from(e: crate::utils::time::DateTimeFromStrError) -> Self {
+        CouldNotParseTimeError(e.0)
+    }
+}
+
+impl std::fmt::Display for CouldNotParseTimeError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "CouldNotParseTimeError on string {}", self.0)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(try_from = "String", into = "String")]
+pub struct Time(pub chrono::DateTime<chrono::Local>);
+
+impl Into<String> for Time {
+    fn into(self) -> String {
+        self.0.to_rfc3339()
+    }
+}
+
+impl TryFrom<String> for Time {
+    type Error = CouldNotParseTimeError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        Ok(Self(crate::utils::time::date_time_from_str(
+            &value,
+        )?))
+    }
+}
+
+impl From<chrono::DateTime<chrono::Local>> for Time {
+    fn from(dt: chrono::DateTime<chrono::Local>) -> Self {
+        Self(dt)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(try_from = "Option<String>", into = "Option<String>")]
+pub struct OptionTime(pub Option<chrono::DateTime<chrono::Local>>);
+
+impl Into<Option<String>> for OptionTime {
+    fn into(self) -> Option<String> {
+        if let Some(dt) = self.0 {
+            Some(dt.to_rfc3339())
+        } else {
+            None
+        }
+    }
+}
+
+impl TryFrom<Option<String>> for OptionTime {
+    type Error = CouldNotParseTimeError;
+
+    fn try_from(value: Option<String>) -> Result<Self, Self::Error> {
+        if let Some(time_str) = value {
+            Ok(Self(Some(crate::utils::time::date_time_from_str(
+                &time_str,
+            )?)))
+        } else {
+            Ok(Self(None))
+        }
+    }
+}
+
+impl From<chrono::DateTime<chrono::Local>> for OptionTime {
+    fn from(dt: chrono::DateTime<chrono::Local>) -> Self {
+        Self(Some(dt))
+    }
+}
+
+impl From<Option<chrono::DateTime<chrono::Local>>> for OptionTime {
+    fn from(dt: Option<chrono::DateTime<chrono::Local>>) -> Self {
+        Self(dt)
+    }
+}
+
 #[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Clone)]
 pub struct PartialFood {
     pub id: Option<String>,
     pub name: Option<String>,
     pub calories: Option<u16>,
-    pub time: Option<String>,
+    pub time: OptionTime,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Clone)]
@@ -20,7 +100,7 @@ pub struct Food {
     pub id: FoodId,
     pub name: String,
     pub calories: u16,
-    pub time: String,
+    pub time: Time,
 }
 
 impl Food {
@@ -37,8 +117,8 @@ impl Food {
         if let Some(calories) = partial_food.calories {
             self.calories = calories;
         }
-        if let Some(time) = partial_food.time {
-            self.time = time;
+        if let Some(time) = partial_food.time.0 {
+            self.time = time.into();
         }
 
         Ok(())
@@ -58,14 +138,14 @@ impl Food {
                 .ok_or(FoodFromPartialError::MissingField("calories".to_string()))?,
             time: partial_food
                 .time
-                .ok_or(FoodFromPartialError::MissingField("time".to_string()))?,
+                .0
+                .ok_or(FoodFromPartialError::MissingField("time".to_string()))?
+                .into(),
         })
     }
 
-    pub fn get_date_time(
-        &self,
-    ) -> Result<chrono::DateTime<chrono::Local>, crate::utils::time::DateTimeFromStrError> {
-        crate::utils::time::date_time_from_str(&self.time)
+    pub fn get_date_time(&self) -> &chrono::DateTime<chrono::Local> {
+        &self.time.0
     }
 }
 

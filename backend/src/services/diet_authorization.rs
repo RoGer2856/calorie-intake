@@ -1,37 +1,43 @@
 use crate::utils::LogError;
 
-use std::str::FromStr;
-
 #[derive(serde::Serialize, serde::Deserialize)]
 struct SecretConfig {
     secret_key: String,
 }
 
+#[derive(Debug)]
+pub struct CouldNotParseRoleError(pub String);
+
+impl std::fmt::Display for CouldNotParseRoleError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "CouldNotParseRoleError on string {}", self.0)
+    }
+}
+
 #[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(try_from = "String", into = "String")]
 pub enum RoleType {
     Admin,
     RegularUser,
 }
 
-impl std::string::ToString for RoleType {
-    fn to_string(&self) -> String {
+impl Into<String> for RoleType {
+    fn into(self) -> String {
         match self {
-            RoleType::Admin => "admin".to_string(),
-            RoleType::RegularUser => "regular_user".to_string(),
+            RoleType::Admin => "admin".into(),
+            RoleType::RegularUser => "regular_user".into(),
         }
     }
 }
 
-impl std::str::FromStr for RoleType {
-    type Err = DietAuthorizationError;
+impl TryFrom<String> for RoleType {
+    type Error = CouldNotParseRoleError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match value.as_str() {
             "admin" => Ok(RoleType::Admin),
             "regular_user" => Ok(RoleType::RegularUser),
-            _ => Err(DietAuthorizationError::InvalidRoleStringError(
-                s.to_string(),
-            )),
+            _ => Err(CouldNotParseRoleError(value)),
         }
     }
 }
@@ -44,6 +50,15 @@ pub enum DietAuthorizationError {
     InvalidRoleStringError(String),
     InvalidJwtReceivedError,
     ParseIntError,
+    CouldNotParseRoleError(String),
+}
+
+impl From<CouldNotParseRoleError> for DietAuthorizationError {
+    fn from(e: CouldNotParseRoleError) -> Self {
+        match e {
+            CouldNotParseRoleError(v) => DietAuthorizationError::CouldNotParseRoleError(v),
+        }
+    }
 }
 
 impl From<std::io::Error> for DietAuthorizationError {
@@ -102,7 +117,7 @@ impl DietAuthorization {
     ) -> Result<String, DietAuthorizationError> {
         let mut claims = std::collections::BTreeMap::new();
         claims.insert("username".to_string(), username);
-        claims.insert("role".to_string(), role.to_string());
+        claims.insert("role".to_string(), role.into());
         claims.insert(
             "max_calories_per_day".to_string(),
             max_calories_per_day.to_string(),
@@ -127,7 +142,7 @@ impl DietAuthorization {
 
         Ok(AuthorizationInfo {
             username: username.clone(),
-            role: RoleType::from_str(&role)?,
+            role: RoleType::try_from(role.clone())?,
             max_calories_per_day: max_calories_per_day.parse()?,
         })
     }

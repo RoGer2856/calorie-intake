@@ -1,7 +1,5 @@
 extern crate diet;
 
-use std::str::FromStr;
-
 pub fn main() {
     let matches = clap::Command::new("diet-jwt-manager")
         .version("0.1.0")
@@ -64,7 +62,7 @@ pub fn main() {
         let jwt = diet_authorization
             .create_jwt(
                 username.to_string(),
-                diet::services::RoleType::from_str(role).unwrap(),
+                diet::services::RoleType::try_from(role.to_string()).unwrap(),
                 max_calories_per_day.parse().unwrap(),
             )
             .unwrap();

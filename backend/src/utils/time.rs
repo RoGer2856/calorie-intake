@@ -12,7 +12,7 @@ pub fn day_start_from_datetime(
         .and_hms(0, 0, 0)
 }
 
-pub struct DateTimeFromStrError;
+pub struct DateTimeFromStrError(pub String);
 
 pub fn date_time_from_str(
     time: &str,
@@ -22,6 +22,6 @@ pub fn date_time_from_str(
     } else if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(time) {
         Ok(dt.into())
     } else {
-        Err(DateTimeFromStrError)
+        Err(DateTimeFromStrError(time.to_string()))
     }
 }

@@ -97,21 +97,21 @@ mod test {
             id: None,
             name: Some("Hamburger".into()),
             calories: Some(600),
-            time: Some("2022 March 2 8:0".into()),
+            time: chrono::Local::now().into(),
         };
 
         let partial_food1 = PartialFood {
             id: None,
             name: Some("Chicken".into()),
             calories: Some(300),
-            time: Some("2022 March 2 12:00".into()),
+            time: chrono::Local::now().into(),
         };
 
         let partial_food2 = PartialFood {
             id: None,
             name: Some("Scrambled eggs".into()),
             calories: Some(400),
-            time: Some("2022 March 2 18:00".into()),
+            time: chrono::Local::now().into(),
         };
 
         let mut food_storage = InMemoryFoodStorage::new();
@@ -139,21 +139,21 @@ mod test {
             id: None,
             name: Some("Hamburger".into()),
             calories: Some(600),
-            time: Some("2022 March 2 8:0".into()),
+            time: chrono::Local::now().into(),
         };
 
         let partial_food1 = PartialFood {
             id: None,
             name: Some("Chicken".into()),
             calories: Some(300),
-            time: Some("2022 March 2 12:00".into()),
+            time: chrono::Local::now().into(),
         };
 
         let partial_food2 = PartialFood {
             id: None,
             name: Some("Scrambled eggs".into()),
             calories: Some(400),
-            time: Some("2022 March 2 18:00".into()),
+            time: chrono::Local::now().into(),
         };
 
         let mut food_storage = InMemoryFoodStorage::new();
@@ -163,7 +163,7 @@ mod test {
 
         let new_name = Some("new name".into());
         let new_calories = Some(0);
-        let new_time = Some("new time".into());
+        let new_time = OptionTime::from(chrono::Local::now());
 
         food_storage
             .update_food(
@@ -172,7 +172,7 @@ mod test {
                     id: None,
                     name: new_name.clone(),
                     calories: None,
-                    time: None,
+                    time: None.into(),
                 },
             )
             .unwrap();
@@ -184,7 +184,7 @@ mod test {
                     id: None,
                     name: None,
                     calories: new_calories,
-                    time: None,
+                    time: None.into(),
                 },
             )
             .unwrap();
@@ -274,21 +274,21 @@ mod test {
             id: None,
             name: Some("Hamburger".into()),
             calories: Some(600),
-            time: Some("2022 March 2 8:0".into()),
+            time: chrono::Local::now().into(),
         };
 
         let partial_food1 = PartialFood {
             id: None,
             name: Some("Chicken".into()),
             calories: Some(300),
-            time: Some("2022 March 2 12:00".into()),
+            time: chrono::Local::now().into(),
         };
 
         let partial_food2 = PartialFood {
             id: None,
             name: Some("Scrambled eggs".into()),
             calories: Some(400),
-            time: Some("2022 March 2 18:00".into()),
+            time: chrono::Local::now().into(),
         };
 
         let mut food_storage = InMemoryFoodStorage::new();
