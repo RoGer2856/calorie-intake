@@ -1,19 +1,19 @@
 import { ReactElement } from "react";
-import { MonthFoods, monthToSortedArray } from "../../model/Foods";
+import { IMonthFoods, monthToSortedArray } from "../../model/Foods";
 import { IEditEvents } from "./EditFoodForm";
 import MonthFoodsView from "./MonthFoodsView";
 
 export default function YearFoodsView(props: {
     maxCaloriesPerDay: number,
     year: number,
-    foods: MonthFoods[],
+    foods: IMonthFoods[],
     onEditEvent: IEditEvents,
 }): ReactElement {
     return (
         <>
             <div className="card m-2 p-2">
                 <h1 className="card-header">Year: {props.year}</h1>
-                {props.foods.map((month: MonthFoods) => {
+                {props.foods.map((month: IMonthFoods) => {
                     return (
                         <MonthFoodsView
                             maxCaloriesPerDay={props.maxCaloriesPerDay}

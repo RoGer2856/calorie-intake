@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ReactElement } from "react";
 import useApi from '../../hooks/use-api';
-import { addFoodToAll, AllFoods, allFoodsToSortedArray, createAllFoods, YearFoods, yearToSortedArray } from '../../model/Foods';
+import { createAllFoods } from '../../model/Foods';
 import AddFoodForm from './AddFoodForm';
+import AllFoods from './AllFoods';
 import { IEditEvents } from './EditFoodForm';
-import YearFoodsView from './YearFoodsView';
 
 export default function MyFoods(props: {
     maxCaloriesPerDay: number,
 }): ReactElement {
     const api = useApi();
 
-    const [foods, setFoods] = useState(createAllFoods());
+    const [foods, setFoods] = useState(createAllFoods(null));
     const [showAddFood, setShowAddFood] = useState(false);
 
     const editEventHandler: IEditEvents = {
@@ -28,13 +28,7 @@ export default function MyFoods(props: {
     let fetchFoods = useCallback(async function () {
         let response = await api.getFoodList();
         if (response !== null) {
-            setFoods((state: AllFoods) => {
-                let foods = createAllFoods();
-                for (const food of response!.foods) {
-                    addFoodToAll(foods, food);
-                }
-                return foods;
-            })
+            setFoods(createAllFoods(response!.foods));
         }
     }, []);
 
@@ -45,13 +39,7 @@ export default function MyFoods(props: {
     async function foodAddedHandler(id: string) {
         let response = await api.getFoodList();
         if (response !== null) {
-            setFoods((state: AllFoods) => {
-                let foods = createAllFoods();
-                for (const food of response!.foods) {
-                    addFoodToAll(foods, food);
-                }
-                return foods;
-            })
+            setFoods(createAllFoods(response!.foods));
         }
     }
 
@@ -86,17 +74,11 @@ export default function MyFoods(props: {
                     Add food
                 </button>}
 
-            {allFoodsToSortedArray(foods).map((year: YearFoods) => {
-                return (
-                    <YearFoodsView
-                        key={year.year}
-                        maxCaloriesPerDay={props.maxCaloriesPerDay}
-                        year={year.year}
-                        foods={yearToSortedArray(year)}
-                        onEditEvent={editEventHandler}
-                    />
-                );
-            })}
+            <AllFoods
+                maxCaloriesPerDay={props.maxCaloriesPerDay}
+                allFoods={foods}
+                onEditEvent={editEventHandler}
+            />
         </>
     );
 }

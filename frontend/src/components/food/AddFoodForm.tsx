@@ -3,7 +3,6 @@ import useApi from "../../hooks/use-api";
 import useInput from "../../hooks/use-input";
 import { IAddFoodResponse, IFoodRequest } from "../../messages/Food";
 import { datetimeLocalInputToRfc3339 } from "../../utils/time";
-import ErrorView from "../ErrorView";
 import UseApiView from "../UseApiView";
 
 export default function AddFoodForm(props: {

@@ -1,12 +1,12 @@
 import { IFoodResponse } from "../messages/Food";
 
-export interface DayFoods {
+export interface IDayFoods {
   dateOfMonth: number,
   dayOfTheWeek: number,
   foods: IFoodResponse[],
 }
 
-export function createDayFoods(dateOfMonth: number, dayOfTheWeek: number): DayFoods {
+export function createDayFoods(dateOfMonth: number, dayOfTheWeek: number): IDayFoods {
   return {
     dateOfMonth,
     dayOfTheWeek,
@@ -14,7 +14,7 @@ export function createDayFoods(dateOfMonth: number, dayOfTheWeek: number): DayFo
   };
 }
 
-export function addFoodToDay(foods: DayFoods, food: IFoodResponse) {
+export function addFoodToDay(foods: IDayFoods, food: IFoodResponse) {
   foods.foods.push(food);
   foods.foods.sort((a: IFoodResponse, b: IFoodResponse) => {
     const aDt = Date.parse(a.time);
@@ -23,19 +23,19 @@ export function addFoodToDay(foods: DayFoods, food: IFoodResponse) {
   });
 }
 
-export interface MonthFoods {
+export interface IMonthFoods {
   month: number;
-  days: { [day: number]: DayFoods };
+  days: { [day: number]: IDayFoods };
 }
 
-export function createMonthFoods(month: number): MonthFoods {
+export function createMonthFoods(month: number): IMonthFoods {
   return {
     month,
     days: {},
   };
 }
 
-export function addFoodToMonth(foods: MonthFoods, food: IFoodResponse) {
+export function addFoodToMonth(foods: IMonthFoods, food: IFoodResponse) {
   const dt = new Date(Date.parse(food.time));
   const dateOfMonth = dt.getDate();
   const dayOfTheWeek = dt.getDay();
@@ -47,27 +47,27 @@ export function addFoodToMonth(foods: MonthFoods, food: IFoodResponse) {
   addFoodToDay(foods.days[dateOfMonth], food);
 }
 
-export function monthToSortedArray(foods: MonthFoods): DayFoods[] {
+export function monthToSortedArray(foods: IMonthFoods): IDayFoods[] {
   let ret = Object.values(foods.days);
-  ret.sort((a: DayFoods, b: DayFoods) => {
+  ret.sort((a: IDayFoods, b: IDayFoods) => {
     return a.dateOfMonth < b.dateOfMonth ? 1 : -1;
   });
   return ret;
 }
 
-export interface YearFoods {
+export interface IYearFoods {
   year: number;
-  months: { [month: number]: MonthFoods };
+  months: { [month: number]: IMonthFoods };
 }
 
-export function createYearFoods(year: number): YearFoods {
+export function createYearFoods(year: number): IYearFoods {
   return {
     year,
     months: {},
   };
 }
 
-export function addFoodToYear(foods: YearFoods, food: IFoodResponse) {
+export function addFoodToYear(foods: IYearFoods, food: IFoodResponse) {
   const dt = new Date(Date.parse(food.time));
   const month = dt.getMonth();
 
@@ -78,25 +78,33 @@ export function addFoodToYear(foods: YearFoods, food: IFoodResponse) {
   addFoodToMonth(foods.months[month], food);
 }
 
-export function yearToSortedArray(foods: YearFoods): MonthFoods[] {
+export function yearToSortedArray(foods: IYearFoods): IMonthFoods[] {
   let ret = Object.values(foods.months);
-  ret.sort((a: MonthFoods, b: MonthFoods) => {
+  ret.sort((a: IMonthFoods, b: IMonthFoods) => {
     return a.month < b.month ? 1 : -1;
   });
   return ret;
 }
 
-export interface AllFoods {
-  years: YearFoods[];
+export interface IAllFoods {
+  years: IYearFoods[];
 }
 
-export function createAllFoods(): AllFoods {
-  return {
+export function createAllFoods(foodList: IFoodResponse[] | null): IAllFoods {
+  let allFoods = {
     years: [],
   };
+
+  if (foodList !== null) {
+    for (const food of foodList) {
+      addFoodToAll(allFoods, food);
+    }
+  }
+  
+  return allFoods;
 }
 
-export function addFoodToAll(foods: AllFoods, food: IFoodResponse) {
+export function addFoodToAll(foods: IAllFoods, food: IFoodResponse) {
   const dt = new Date(Date.parse(food.time));
   const year = dt.getFullYear();
 
@@ -107,9 +115,9 @@ export function addFoodToAll(foods: AllFoods, food: IFoodResponse) {
   addFoodToYear(foods.years[year], food);
 }
 
-export function allFoodsToSortedArray(foods: AllFoods): YearFoods[] {
+export function allFoodsToSortedArray(foods: IAllFoods): IYearFoods[] {
   let ret = Object.values(foods.years);
-  ret.sort((a: YearFoods, b: YearFoods) => {
+  ret.sort((a: IYearFoods, b: IYearFoods) => {
     return a.year < b.year ? 1 : -1;
   });
   return ret;

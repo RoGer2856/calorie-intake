@@ -1,20 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IFoodResponse } from "../messages/Food";
-import { addFoodToAll, AllFoods, createAllFoods } from "../model/Foods";
+import { addFoodToAll, IAllFoods, createAllFoods } from "../model/Foods";
 
 export interface IMyFoodsState {
-	foods: AllFoods,
+	foods: IAllFoods,
 }
 
 const initialState = {
-	foods: createAllFoods(),
+	foods: createAllFoods(null),
 };
 
 const slice = createSlice({
 	name: "UserInfo",
 	initialState: initialState,
 	reducers: {
-		set(state: IMyFoodsState, action: PayloadAction<AllFoods>) {
+		set(state: IMyFoodsState, action: PayloadAction<IAllFoods>) {
 			state.foods = action.payload;
 		},
 		add(state: IMyFoodsState, action: PayloadAction<IFoodResponse>) {
