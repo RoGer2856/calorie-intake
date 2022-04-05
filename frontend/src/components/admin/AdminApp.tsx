@@ -4,6 +4,7 @@ import { IUserInfo } from "../../model/UserInfo";
 import MyFoods from "../food/MyFoods";
 import PageNotFound from "../PageNotFound";
 import AdminLayout from "./AdminLayout";
+import AllUserFoods from "./AllUserFoods";
 import ReportScreen from "./ReportScreen";
 
 export default function AdminApp(props: {
@@ -16,6 +17,7 @@ export default function AdminApp(props: {
                     <Route path="/">
                         <Route index element={<Navigate replace to="/my-consumption" />} />
                         <Route path="/my-consumption" element={<MyFoods maxCaloriesPerDay={props.userInfo.maxCaloriesPerDay} />} />
+                        <Route path="/everyones-consumption" element={<AllUserFoods />} />
                         <Route path="/report" element={<ReportScreen />} />
                     </Route>
                     <Route path="*" element={<PageNotFound />} />

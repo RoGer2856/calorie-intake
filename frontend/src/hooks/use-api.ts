@@ -10,6 +10,7 @@ import {
   IGetUserInfoResponse,
   IGetFoodReportResponse,
   IGetUserListResponse,
+  userInfoResponseToUserInfo,
 } from "../messages/Food";
 import { IUserInfo, Role } from "../model/UserInfo";
 
@@ -17,7 +18,7 @@ export type UseApiHandler = {
   isLoading: boolean;
   errorMessage: string | null;
   getUserInfo: () => Promise<IUserInfo | null>;
-  getUserList: () => Promise<IGetUserListResponse | null>;
+  getUserList: () => Promise<IUserInfo[] | null>;
   addFood: (food: IFoodRequest) => Promise<IAddFoodResponse | null>;
   getFood: (id: String) => Promise<IFoodResponse | null>;
   updateFood: (id: String, food: IUpdateFoodRequest) => Promise<{} | null>;
@@ -55,26 +56,7 @@ export default function useApi(): UseApiHandler {
       setIsLoading(false);
 
       let data = (await response.json()) as IGetUserInfoResponse;
-
-      let role = Role.RegularUser;
-      switch (data.role) {
-        case "regular_user": {
-          role = Role.RegularUser;
-          break;
-        }
-        case "admin": {
-          role = Role.Admin;
-          break;
-        }
-      }
-
-      let ret: IUserInfo = {
-        username: data.username,
-        role,
-        maxCaloriesPerDay: data.max_calories_per_day,
-      };
-
-      return ret;
+      return userInfoResponseToUserInfo(data);
     } else {
       setIsLoading(false);
       await handleErrorResponse(response);
@@ -82,7 +64,7 @@ export default function useApi(): UseApiHandler {
     }
   }
 
-  async function getUserList(): Promise<IGetUserListResponse | null> {
+  async function getUserList(): Promise<IUserInfo[] | null> {
     setIsLoading(true);
     setErrorMessage(null);
 
@@ -96,7 +78,8 @@ export default function useApi(): UseApiHandler {
     if (response.ok) {
       setIsLoading(false);
 
-      return (await response.json()) as IGetUserListResponse;
+      let data = (await response.json()) as IGetUserListResponse;
+      return data.users.map((userinfo: IGetUserInfoResponse) => userInfoResponseToUserInfo(userinfo));
     } else {
       setIsLoading(false);
       await handleErrorResponse(response);

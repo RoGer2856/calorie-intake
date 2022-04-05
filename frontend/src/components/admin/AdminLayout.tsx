@@ -35,6 +35,14 @@ export default function RegularUserLayout(props: {
                             <li className="nav-item">
                                 <NavLink
                                     className={navLinkClassName}
+                                    to="/everyones-consumption"
+                                >
+                                    Everyone's consumption
+                                </NavLink>
+                            </li>
+                            <li className="nav-item">
+                                <NavLink
+                                    className={navLinkClassName}
                                     to="/report"
                                 >
                                     Report

@@ -1,3 +1,5 @@
+import { IUserInfo, Role } from "../model/UserInfo";
+
 export interface IErrorMessage {
     reason: string,
 }
@@ -6,6 +8,28 @@ export interface IGetUserInfoResponse {
     username: string,
     role: string,
     max_calories_per_day: number,
+}
+
+export function userInfoResponseToUserInfo(userInfoResponse: IGetUserInfoResponse): IUserInfo {
+    let role = Role.RegularUser;
+    switch (userInfoResponse.role) {
+      case "regular_user": {
+        role = Role.RegularUser;
+        break;
+      }
+      case "admin": {
+        role = Role.Admin;
+        break;
+      }
+    }
+
+    let ret: IUserInfo = {
+      username: userInfoResponse.username,
+      role,
+      maxCaloriesPerDay: userInfoResponse.max_calories_per_day,
+    };
+
+    return ret;
 }
 
 export interface IAddFoodResponse {
@@ -42,5 +66,5 @@ export interface IGetFoodReportResponse {
 }
 
 export interface IGetUserListResponse {
-    users: string[],
+    users: IGetUserInfoResponse[],
 }
