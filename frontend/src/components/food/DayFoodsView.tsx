@@ -46,7 +46,7 @@ export default function DayFoodsView(props: {
                 {caloriesExceededMaximum
                     ?
                     <div className="alert alert-danger">
-                        You consumed more than {props.maxCaloriesPerDay} kcal
+                        Exceeded the daily consumption limit ({props.maxCaloriesPerDay} kcal)
                     </div>
                     :
                     <></>}

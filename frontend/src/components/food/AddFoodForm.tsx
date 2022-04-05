@@ -4,6 +4,7 @@ import useInput from "../../hooks/use-input";
 import { IAddFoodResponse, IFoodRequest } from "../../messages/Food";
 import { datetimeLocalInputToRfc3339 } from "../../utils/time";
 import ErrorView from "../ErrorView";
+import UseApiView from "../UseApiView";
 
 export default function AddFoodForm(props: {
     onFoodAdded: (id: string) => void,
@@ -97,12 +98,9 @@ export default function AddFoodForm(props: {
                     Add food
                 </button>
 
-                {api.errorMessage === null
-                    ?
+                <UseApiView api={api}>
                     <></>
-                    :
-                    <ErrorView errorMessage={api.errorMessage} />
-                }
+                </UseApiView>
             </form>
         </>
     );

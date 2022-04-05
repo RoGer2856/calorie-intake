@@ -39,7 +39,7 @@ export default function RegularUserLayout(props: {
                 </div>
             </div>
         </nav>
-        <div>
+        <div className="m-3">
             {props.children}
         </div>
         </>

@@ -9,6 +9,7 @@ import {
   IGetFoodListResponse,
   IGetUserInfoResponse,
   IGetFoodReportResponse,
+  IGetUserListResponse,
 } from "../messages/Food";
 import { IUserInfo, Role } from "../model/UserInfo";
 
@@ -16,11 +17,13 @@ export type UseApiHandler = {
   isLoading: boolean;
   errorMessage: string | null;
   getUserInfo: () => Promise<IUserInfo | null>;
+  getUserList: () => Promise<IGetUserListResponse | null>;
   addFood: (food: IFoodRequest) => Promise<IAddFoodResponse | null>;
   getFood: (id: String) => Promise<IFoodResponse | null>;
   updateFood: (id: String, food: IUpdateFoodRequest) => Promise<{} | null>;
   deleteFood: (id: String) => Promise<{} | null>;
   getFoodList: () => Promise<IGetFoodListResponse | null>;
+  getFoodListOf: (username: string) => Promise<IGetFoodListResponse | null>;
   getFoodReport: () => Promise<IGetFoodReportResponse | null>;
 };
 
@@ -72,6 +75,28 @@ export default function useApi(): UseApiHandler {
       };
 
       return ret;
+    } else {
+      setIsLoading(false);
+      await handleErrorResponse(response);
+      return null;
+    }
+  }
+
+  async function getUserList(): Promise<IGetUserListResponse | null> {
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    let response: Response = await fetch(
+      `/api/user-list?access_token=${ACCESS_TOKEN}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (response.ok) {
+      setIsLoading(false);
+
+      return (await response.json()) as IGetUserListResponse;
     } else {
       setIsLoading(false);
       await handleErrorResponse(response);
@@ -191,6 +216,28 @@ export default function useApi(): UseApiHandler {
     }
   }
 
+  async function getFoodListOf(username: string): Promise<IGetFoodListResponse | null> {
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    let response: Response = await fetch(
+      `/api/food-of/${username}?access_token=${ACCESS_TOKEN}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (response.ok) {
+      setIsLoading(false);
+
+      return (await response.json()) as IGetFoodListResponse;
+    } else {
+      setIsLoading(false);
+      await handleErrorResponse(response);
+      return null;
+    }
+  }
+
   async function getFoodReport(): Promise<IGetFoodReportResponse | null> {
     setIsLoading(true);
     setErrorMessage(null);
@@ -217,11 +264,13 @@ export default function useApi(): UseApiHandler {
     isLoading,
     errorMessage,
     getUserInfo,
+    getUserList,
     addFood,
     getFood,
     updateFood,
     deleteFood,
     getFoodList,
+    getFoodListOf,
     getFoodReport,
   };
 }

@@ -40,3 +40,7 @@ export interface IGetFoodReportResponse {
     food_entries_added_week_before_last_week: number,
     average_calories_consumed_last_week: number,
 }
+
+export interface IGetUserListResponse {
+    users: string[],
+}

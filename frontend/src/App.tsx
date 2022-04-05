@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import AdminApp from './components/admin/AdminApp';
-import ErrorView from './components/ErrorView';
 import Loading from './components/Loading';
 import RegularUserApp from './components/regular_user/RegularUserApp';
+import UseApiView from './components/UseApiView';
 import useApi from './hooks/use-api';
 import { IUserInfo, Role } from './model/UserInfo';
 
@@ -24,26 +24,23 @@ function App() {
 
   return (
     <>
-      {userInfo !== null
-        ?
+      <UseApiView api={api}>
         <>
-          {userInfo.role === Role.RegularUser
+          {userInfo !== null
             ?
-            <RegularUserApp userInfo={userInfo} />
+            <>
+              {userInfo!.role === Role.RegularUser
+                ?
+                <RegularUserApp userInfo={userInfo!} />
+                :
+                <AdminApp userInfo={userInfo!} />
+              }
+            </>
             :
-            <AdminApp userInfo={userInfo} />
-          }
-        </>
-        :
-        <>
-          {api.errorMessage === null
-            ?
             <Loading />
-            :
-            <ErrorView errorMessage={api.errorMessage} />
           }
         </>
-      }
+      </UseApiView>
     </>
   );
 }
