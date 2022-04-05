@@ -261,9 +261,9 @@ pub async fn get_report(
 
     match authz_info.role {
         RoleType::Admin => {
-            let datetime_now = chrono::Local::now();
-            let datetime_1_week_before = datetime_now - chrono::Duration::days(7);
-            let datetime_2_week_before = datetime_now - chrono::Duration::days(14);
+            let datetime_now = crate::utils::time::current_day_start_local();
+            let datetime_1_week_before = datetime_now - chrono::Duration::days(6);
+            let datetime_2_week_before = datetime_1_week_before - chrono::Duration::days(7);
 
             let food_storage = app_context.food_storage.lock().await;
 
