@@ -33,24 +33,26 @@ pub fn check_food_array_equality(expected: &[AddFoodRequest], received: &[Food])
 pub fn generate_example_foods() -> Vec<AddFoodRequest> {
     let mut ret = Vec::new();
 
+    let random_value = rand::random::<u16>();
+
     ret.push(AddFoodRequest {
         id: None,
         name: Some("Hamburger".into()),
-        calories: Some(600),
+        calories: Some(600 + random_value),
         time: Some("2022 March 2 8:0".into()),
     });
 
     ret.push(AddFoodRequest {
         id: None,
         name: Some("Chicken".into()),
-        calories: Some(300),
+        calories: Some(300 + random_value),
         time: Some("2022 March 2 12:00".into()),
     });
 
     ret.push(AddFoodRequest {
         id: None,
         name: Some("Scrambled eggs".into()),
-        calories: Some(400),
+        calories: Some(400 + random_value),
         time: Some("2022 March 2 18:00".into()),
     });
 

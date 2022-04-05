@@ -77,6 +77,28 @@ impl ApiClient {
             .await
     }
 
+    pub async fn get_userinfo(
+        &mut self,
+        access_token: &str,
+    ) -> Result<StructResponse<GetUserInfoResponse>, RequestError> {
+        self.empty_request_with_json_response::<GetUserInfoResponse>(
+            hyper::Method::GET,
+            &format!("/userinfo?access_token={}", access_token),
+        )
+        .await
+    }
+
+    pub async fn get_user_list(
+        &mut self,
+        access_token: &str,
+    ) -> Result<StructResponse<GetUserListResponse>, RequestError> {
+        self.empty_request_with_json_response::<GetUserListResponse>(
+            hyper::Method::GET,
+            &format!("/user-list?access_token={}", access_token),
+        )
+        .await
+    }
+
     pub async fn add_food(
         &mut self,
         access_token: &str,
@@ -85,7 +107,7 @@ impl ApiClient {
         self.json_request::<AddFoodRequest, AddFoodResponse>(
             hyper::Method::POST,
             &food_request,
-            &("/food?access_token=".to_string() + &access_token),
+            &format!("/food?access_token={}", access_token),
         )
         .await
     }
@@ -96,18 +118,19 @@ impl ApiClient {
     ) -> Result<StructResponse<GetFoodListResponse>, RequestError> {
         self.empty_request_with_json_response::<GetFoodListResponse>(
             hyper::Method::GET,
-            &("/food?access_token=".to_string() + &access_token),
+            &format!("/food?access_token={}", access_token),
         )
         .await
     }
 
-    pub async fn get_all_user_food_list(
+    pub async fn get_food_list_of_user(
         &mut self,
         access_token: &str,
+        username: &str,
     ) -> Result<StructResponse<GetFoodListResponse>, RequestError> {
         self.empty_request_with_json_response::<GetFoodListResponse>(
             hyper::Method::GET,
-            &("/food/all?access_token=".to_string() + &access_token),
+            &format!("/food-of/{}?access_token={}", username, access_token),
         )
         .await
     }
@@ -118,7 +141,7 @@ impl ApiClient {
     ) -> Result<StructResponse<GetFoodReportResponse>, RequestError> {
         self.empty_request_with_json_response::<GetFoodReportResponse>(
             hyper::Method::GET,
-            &("/food/report?access_token=".to_string() + &access_token),
+            &format!("/food/report?access_token={}", access_token),
         )
         .await
     }
@@ -130,7 +153,7 @@ impl ApiClient {
     ) -> Result<StructResponse<GetFoodByIdResponse>, RequestError> {
         self.empty_request_with_json_response::<GetFoodByIdResponse>(
             hyper::Method::GET,
-            &("/food/".to_string() + id + "?access_token=" + &access_token),
+            &format!("/food/{}?access_token={}", id, access_token),
         )
         .await
     }
@@ -144,7 +167,7 @@ impl ApiClient {
         self.json_request_with_no_response_body(
             hyper::Method::PUT,
             food,
-            &("/food/".to_string() + id + "?access_token=" + &access_token),
+            &format!("/food/{}?access_token={}", id, access_token),
         )
         .await
     }
@@ -156,18 +179,7 @@ impl ApiClient {
     ) -> Result<NoBodyResponse, RequestError> {
         self.empty_request_with_no_response_body(
             hyper::Method::DELETE,
-            &("/food/".to_string() + id + "?access_token=" + &access_token),
-        )
-        .await
-    }
-
-    pub async fn get_userinfo(
-        &mut self,
-        access_token: &str,
-    ) -> Result<StructResponse<GetUserInfoResponse>, RequestError> {
-        self.empty_request_with_json_response::<GetUserInfoResponse>(
-            hyper::Method::GET,
-            &("/userinfo?access_token=".to_string() + &access_token),
+            &format!("/food/{}?access_token={}", id, access_token),
         )
         .await
     }

@@ -93,9 +93,10 @@ pub async fn get_food_list(
     )?)
 }
 
-pub async fn get_all_user_food_list(
+pub async fn get_food_list_of(
     req: hyper::Request<hyper::Body>,
     app_context: crate::AppContext,
+    username: String,
 ) -> Result<hyper::Response<hyper::Body>, crate::hyper_helpers::ErrorResponse> {
     let access_token =
         crate::api::helpers::get_access_token_from_query_params(req.uri().query().unwrap_or(""))?;
@@ -108,17 +109,18 @@ pub async fn get_all_user_food_list(
 
     match authz_info.role {
         RoleType::Admin => {
-            let food_storage = app_context.food_storage.lock().await;
+            let mut food_storage = app_context.food_storage.lock().await;
 
-            let mut foods = Vec::<crate::services::Food>::new();
-            for (_username, user_food_storage) in food_storage.user_storages_iter() {
-                let mut user_food_storage = user_food_storage.lock().await;
-                foods.append(&mut user_food_storage.iter_food()?.collect());
-            }
+            let food_storage = food_storage.get_food_storage_for_user(username);
+            let mut food_storage = food_storage.lock().await;
+
+            let resp = messages::GetFoodListResponse {
+                foods: food_storage.iter_food()?.collect(),
+            };
 
             Ok(crate::hyper_helpers::create_json_response(
                 hyper::StatusCode::OK,
-                &messages::GetFoodListResponse { foods },
+                &resp,
             )?)
         }
         RoleType::RegularUser => Err(crate::hyper_helpers::ErrorResponse(

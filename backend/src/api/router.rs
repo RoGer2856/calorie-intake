@@ -69,11 +69,12 @@ pub async fn router(
     lazy_static! {
         static ref GET_STATUS: RoutingItem = RoutingItem::new(hyper::Method::GET, "/status");
         static ref GET_USERINFO: RoutingItem = RoutingItem::new(hyper::Method::GET, "/userinfo");
+        static ref GET_USER_LIST: RoutingItem = RoutingItem::new(hyper::Method::GET, "/user-list");
         static ref GET_FOOD_REPORT: RoutingItem =
             RoutingItem::new(hyper::Method::GET, "/food/report");
         static ref GET_FOOD_LIST: RoutingItem = RoutingItem::new(hyper::Method::GET, "/food");
-        static ref GET_ALL_USER_FOOD_LIST: RoutingItem =
-            RoutingItem::new(hyper::Method::GET, "/food/all");
+        static ref GET_FOOD_LIST_OF: RoutingItem =
+            RoutingItem::new(hyper::Method::GET, "/food-of/([a-zA-Z0-9_]{4, 20})");
         static ref POST_FOOD: RoutingItem = RoutingItem::new(hyper::Method::POST, "/food");
         static ref GET_FOOD: RoutingItem = RoutingItem::new(
             hyper::Method::GET,
@@ -98,12 +99,19 @@ pub async fn router(
         crate::api::userinfo::get_userinfo(req, app_context).await
     } else if let Some(_captures) = GET_USERINFO.match_request(&req.method(), &path) {
         crate::api::userinfo::get_userinfo(req, app_context).await
+    } else if let Some(_captures) = GET_USER_LIST.match_request(&req.method(), &path) {
+        crate::api::userinfo::get_user_list(req, app_context).await
     } else if let Some(_captures) = GET_FOOD_REPORT.match_request(&req.method(), &path) {
         crate::api::food::get_report(req, app_context).await
     } else if let Some(_captures) = GET_FOOD_LIST.match_request(&req.method(), &path) {
         crate::api::food::get_food_list(req, app_context).await
-    } else if let Some(_captures) = GET_ALL_USER_FOOD_LIST.match_request(&req.method(), &path) {
-        crate::api::food::get_all_user_food_list(req, app_context).await
+    } else if let Some(captures) = GET_FOOD_LIST_OF.match_request(&req.method(), &path) {
+        let username = captures
+            .get(1)
+            .ok_or(RoutingError::InvalidCaptureGroupId)
+            .log_routing_error()?
+            .as_str();
+        crate::api::food::get_food_list_of(req, app_context, username.to_string()).await
     } else if let Some(_captures) = POST_FOOD.match_request(&req.method(), &path) {
         crate::api::food::add_food(req, app_context).await
     } else if let Some(captures) = GET_FOOD.match_request(&req.method(), &path) {

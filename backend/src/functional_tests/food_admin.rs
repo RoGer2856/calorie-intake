@@ -16,11 +16,11 @@ async fn multiple_user_foods() {
                 DietAuthorization::new(crate::functional_tests::SECRETS_FILE_LOCATION.into())
                     .unwrap();
 
-            let access_token0 = authorization
+            let access_token_john = authorization
                 .create_jwt("john".into(), RoleType::RegularUser, 2100)
                 .unwrap();
 
-            let access_token1 = authorization
+            let access_token_jane = authorization
                 .create_jwt("jane".into(), RoleType::RegularUser, 2100)
                 .unwrap();
 
@@ -28,17 +28,27 @@ async fn multiple_user_foods() {
                 .create_jwt("admin".into(), RoleType::Admin, 2100)
                 .unwrap();
 
-            let foods = generate_example_foods();
+            let john_foods = generate_example_foods();
+            let jane_foods = generate_example_foods();
 
-            add_foods(&mut api_client, &access_token0.clone(), &foods).await;
-            add_foods(&mut api_client, &access_token1.clone(), &foods).await;
+            add_foods(&mut api_client, &access_token_john.clone(), &john_foods).await;
+            add_foods(&mut api_client, &access_token_jane.clone(), &jane_foods).await;
 
-            // check the list of foods for access_token_admin
+            // check the list of john's foods for access_token_admin
             let resp = api_client
-                .get_all_user_food_list(&access_token_admin)
+                .get_food_list_of_user(&access_token_admin, "john".into())
                 .await
                 .unwrap();
-            assert_eq!(foods.len() * 2, resp.object.foods.len());
+            assert_eq!(john_foods.len(), resp.object.foods.len());
+
+            // check the list of jane's foods for access_token_admin
+            let resp = api_client
+                .get_food_list_of_user(&access_token_admin, "jane".into())
+                .await
+                .unwrap();
+            assert_eq!(jane_foods.len(), resp.object.foods.len());
+            check_food_array_equality(&jane_foods, &resp.object.foods).unwrap();
+            check_food_array_equality(&jane_foods, &resp.object.foods).unwrap();
         },
     )
     .await;
