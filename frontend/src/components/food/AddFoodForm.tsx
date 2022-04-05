@@ -3,6 +3,7 @@ import useApi from "../../hooks/use-api";
 import useInput from "../../hooks/use-input";
 import { IAddFoodResponse, IFoodRequest } from "../../messages/Food";
 import { datetimeLocalInputToRfc3339 } from "../../utils/time";
+import ErrorView from "../ErrorView";
 
 export default function AddFoodForm(props: {
     onFoodAdded: (id: string) => void,
@@ -34,10 +35,10 @@ export default function AddFoodForm(props: {
         if (response !== null) {
             let data = response as IAddFoodResponse;
             props.onFoodAdded(data.id);
-        }
 
-        nameInput.reset("");
-        caloriesInput.reset("");
+            nameInput.reset("");
+            caloriesInput.reset("");
+        }
     }
 
     return (
@@ -96,11 +97,12 @@ export default function AddFoodForm(props: {
                     Add food
                 </button>
 
-                {api.errorMessage === ""
+                {api.errorMessage === null
                     ?
                     <></>
                     :
-                    <p className="alert alert-danger">{api.errorMessage}</p>}
+                    <ErrorView errorMessage={api.errorMessage} />
+                }
             </form>
         </>
     );

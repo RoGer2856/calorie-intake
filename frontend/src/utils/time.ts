@@ -20,7 +20,7 @@ export function datetimeLocalInputToRfc3339(dateTimeLocalInput: string) {
     );
   }
 
-  return dateTimeLocalInput + getRfc3339TimezoneOffset();
+  return dateTimeLocalInput + ":00" + getRfc3339TimezoneOffset();
 }
 
 export function dateToDatetimeLocalInput(dt: Date) {

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import AdminApp from './components/admin/AdminApp';
+import ErrorView from './components/ErrorView';
 import Loading from './components/Loading';
 import RegularUserApp from './components/regular_user/RegularUserApp';
 import useApi from './hooks/use-api';
@@ -35,11 +36,12 @@ function App() {
         </>
         :
         <>
-          {api.errorMessage === ""
+          {api.errorMessage === null
             ?
             <Loading />
             :
-            <p>{api.errorMessage}</p>}
+            <ErrorView errorMessage={api.errorMessage} />
+          }
         </>
       }
     </>

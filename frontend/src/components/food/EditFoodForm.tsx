@@ -3,6 +3,7 @@ import useApi from "../../hooks/use-api";
 import useInput from "../../hooks/use-input";
 import { IFoodResponse, IUpdateFoodRequest } from "../../messages/Food";
 import { datetimeLocalInputToRfc3339, dateToDatetimeLocalInput } from "../../utils/time";
+import ErrorView from "../ErrorView";
 
 export default function EditFoodForm(props: {
     food: IFoodResponse,
@@ -128,11 +129,12 @@ export default function EditFoodForm(props: {
                     Delete
                 </button>
 
-                {api.errorMessage === ""
+                {api.errorMessage === null
                     ?
                     <></>
                     :
-                    <p className="alert alert-danger">{api.errorMessage}</p>}
+                    <ErrorView errorMessage={api.errorMessage} />
+                }
             </form>
         </>
     );
