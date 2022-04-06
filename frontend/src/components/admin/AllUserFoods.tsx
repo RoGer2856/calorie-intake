@@ -20,7 +20,7 @@ export default function AllUserFoods(props: {
 
 		if (userInfos.length !== 0) {
 			const userInfo = userInfos.find((userInfo: IUserInfo) => username === userInfo.username);
-			if (userInfo !== undefined) {
+			if (userInfo !== undefined && userInfo !== selectedUserInfo) {
 				setSelectedUserInfo(userInfo);
 			}
 		}
@@ -33,7 +33,7 @@ export default function AllUserFoods(props: {
 		} else {
 			setSelectedUserByUsername(username);
 		}
-	}, [searchParams, userInfos]);
+	}, [searchParams, userInfos, props.myUserInfo.username, setSelectedUserInfo]);
 
 	function changeHandler(event: React.FormEvent<HTMLSelectElement>) {
 		const username = event.currentTarget.value;
@@ -45,7 +45,7 @@ export default function AllUserFoods(props: {
 		if (response !== null) {
 			setUserInfos(response);
 		}
-	}, []);
+	}, [api]);
 
 	useEffect(() => {
 		fetchUserInfos();
@@ -79,7 +79,12 @@ export default function AllUserFoods(props: {
 					</select>
 				</form>
 
-				<MyFoods userInfo={selectedUserInfo!} />
+				{selectedUserInfo !== null
+					?
+					<MyFoods userInfo={selectedUserInfo!} />
+					:
+					<></>
+				}
 			</UseApiView>
 		</>
 	)

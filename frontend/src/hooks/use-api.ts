@@ -31,6 +31,11 @@ export type UseApiHandler = {
 };
 
 export default function useApi(): [UseApiFeedback, UseApiHandler] {
+  let [api, ] = useState(useApiHelper());
+  return api;
+}
+
+function useApiHelper(): [UseApiFeedback, UseApiHandler] {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 

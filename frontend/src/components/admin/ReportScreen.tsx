@@ -16,7 +16,7 @@ export default function ReportScreen(): ReactElement {
             const report = response as IGetFoodReportResponse;
             setReport(report);
         }
-    }, []);
+    }, [api]);
 
     useEffect(() => {
         fetchFoodReport();

@@ -3,6 +3,7 @@ import { ReactElement } from "react";
 import useApi from '../../hooks/use-api';
 import { createAllFoods } from '../../model/Foods';
 import { IUserInfo } from '../../model/UserInfo';
+import UseApiView from '../UseApiView';
 import AddFoodForm from './AddFoodForm';
 import AllFoods from './AllFoods';
 import { IEditEvents } from './EditFoodForm';
@@ -10,7 +11,7 @@ import { IEditEvents } from './EditFoodForm';
 export default function MyFoods(props: {
     userInfo: IUserInfo,
 }): ReactElement {
-    const [, api] = useApi();
+    const [apiFeedback, api] = useApi();
 
     const [foods, setFoods] = useState(createAllFoods(null));
     const [showAddFood, setShowAddFood] = useState(false);
@@ -31,7 +32,7 @@ export default function MyFoods(props: {
         if (response !== null) {
             setFoods(createAllFoods(response!.foods));
         }
-    }, [props.userInfo]);
+    }, [props.userInfo, api]);
 
     useEffect(() => {
         fetchFoods();
@@ -54,35 +55,37 @@ export default function MyFoods(props: {
 
     return (
         <>
-            {showAddFood
-                ?
-                <>
+            <UseApiView apiFeedback={apiFeedback} >
+                {showAddFood
+                    ?
+                    <>
+                        <button
+                            className="btn btn-primary"
+                            onClick={hideAddFoodHandler}
+                        >
+                            Close
+                        </button>
+                        <div className="card p-2 m-2">
+                            <AddFoodForm
+                                onFoodAdded={foodAddedHandler}
+                                userInfo={props.userInfo}
+                            />
+                        </div>
+                    </>
+                    :
                     <button
                         className="btn btn-primary"
-                        onClick={hideAddFoodHandler}
+                        onClick={showAddFoodHandler}
                     >
-                        Close
-                    </button>
-                    <div className="card p-2 m-2">
-                        <AddFoodForm
-                            onFoodAdded={foodAddedHandler}
-                            userInfo={props.userInfo}
-                        />
-                    </div>
-                </>
-                :
-                <button
-                    className="btn btn-primary"
-                    onClick={showAddFoodHandler}
-                >
-                    Add food
-                </button>}
+                        Add food
+                    </button>}
 
-            <AllFoods
-                userInfo={props.userInfo}
-                allFoods={foods}
-                onEditEvent={editEventHandler}
-            />
+                <AllFoods
+                    userInfo={props.userInfo}
+                    allFoods={foods}
+                    onEditEvent={editEventHandler}
+                />
+            </UseApiView>
         </>
     );
 }

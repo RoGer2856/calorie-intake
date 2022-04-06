@@ -21,7 +21,7 @@ function App() {
       setUserInfo(response as IUserInfo);
       dispatch(userInfoActions.setUserinfo(response as IUserInfo));
     }
-  }, []);
+  }, [dispatch, api]);
 
   useEffect(() => {
     fetchUserInfo();
