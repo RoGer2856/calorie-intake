@@ -31,19 +31,31 @@ async fn multiple_user_foods() {
             let john_foods = generate_example_foods();
             let jane_foods = generate_example_foods();
 
-            add_foods(&mut api_client, &access_token_john.clone(), &john_foods).await;
-            add_foods(&mut api_client, &access_token_jane.clone(), &jane_foods).await;
+            add_foods(
+                &mut api_client,
+                &access_token_john.clone(),
+                "john",
+                &john_foods,
+            )
+            .await;
+            add_foods(
+                &mut api_client,
+                &access_token_jane.clone(),
+                "jane",
+                &jane_foods,
+            )
+            .await;
 
             // check the list of john's foods for access_token_admin
             let resp = api_client
-                .get_food_list_of_user(&access_token_admin, "john".into())
+                .get_food_list(&access_token_admin, "john")
                 .await
                 .unwrap();
             assert_eq!(john_foods.len(), resp.object.foods.len());
 
             // check the list of jane's foods for access_token_admin
             let resp = api_client
-                .get_food_list_of_user(&access_token_admin, "jane".into())
+                .get_food_list(&access_token_admin, "jane")
                 .await
                 .unwrap();
             assert_eq!(jane_foods.len(), resp.object.foods.len());
@@ -77,11 +89,11 @@ async fn get_food_by_id() {
 
             let foods = generate_example_foods();
 
-            let ids = add_foods(&mut api_client, &access_token_john.clone(), &foods).await;
+            let ids = add_foods(&mut api_client, &access_token_john.clone(), "john", &foods).await;
 
             for id in ids.iter() {
                 let resp = api_client
-                    .get_food_by_id(&access_token_admin, id)
+                    .get_food_by_id(&access_token_admin, "john", id)
                     .await
                     .unwrap();
                 food_request_array_contains_food(&foods, &resp.object).unwrap();
@@ -114,7 +126,7 @@ async fn update_food() {
 
             let foods = generate_example_foods();
 
-            let ids = add_foods(&mut api_client, &access_token_john.clone(), &foods).await;
+            let ids = add_foods(&mut api_client, &access_token_john.clone(), "john", &foods).await;
 
             let id_to_update = ids.get(0).unwrap();
             let updated_food = crate::api::food::messages::UpdateFoodRequest {
@@ -124,13 +136,13 @@ async fn update_food() {
                 time: chrono::Local::now().into(),
             };
             api_client
-                .update_food_by_id(&access_token_admin, id_to_update, &updated_food)
+                .update_food_by_id(&access_token_admin, "john", id_to_update, &updated_food)
                 .await
                 .unwrap();
 
             for id in ids.iter() {
                 let resp = api_client
-                    .get_food_by_id(&access_token_admin, &id)
+                    .get_food_by_id(&access_token_admin, "john", &id)
                     .await
                     .unwrap();
 
@@ -175,16 +187,16 @@ async fn delete_food_by_id() {
 
             let foods = generate_example_foods();
 
-            let ids = add_foods(&mut api_client, &access_token_john.clone(), &foods).await;
+            let ids = add_foods(&mut api_client, &access_token_john.clone(), "john", &foods).await;
 
             let id_to_delete = ids.get(0).unwrap();
             api_client
-                .delete_food_by_id(&access_token_admin, id_to_delete)
+                .delete_food_by_id(&access_token_admin, "john", id_to_delete)
                 .await
                 .unwrap();
 
             let ret = api_client
-                .get_food_by_id(&access_token_admin, id_to_delete)
+                .get_food_by_id(&access_token_admin, "john", id_to_delete)
                 .await;
             if let Err(crate::api_client::RequestError::ClientOrServerError(e)) = ret {
                 assert_eq!(e.status, hyper::StatusCode::NOT_FOUND);
@@ -195,7 +207,7 @@ async fn delete_food_by_id() {
             for id in ids.iter() {
                 if *id != *id_to_delete {
                     let resp = api_client
-                        .get_food_by_id(&access_token_admin, id)
+                        .get_food_by_id(&access_token_admin, "john", id)
                         .await
                         .unwrap();
                     food_request_array_contains_food(&foods, &resp.object).unwrap();

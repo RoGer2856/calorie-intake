@@ -96,12 +96,14 @@ async fn get_user_list_as_admin() {
             add_foods(
                 &mut api_client,
                 &access_token_jane,
+                "jane",
                 &generate_example_foods(),
             )
             .await;
             add_foods(
                 &mut api_client,
                 &access_token_john,
+                "john",
                 &generate_example_foods(),
             )
             .await;
@@ -140,12 +142,14 @@ async fn get_user_list_as_regular_user() {
             add_foods(
                 &mut api_client,
                 &access_token_jane,
+                "jane",
                 &generate_example_foods(),
             )
             .await;
             add_foods(
                 &mut api_client,
                 &access_token_john,
+                "john",
                 &generate_example_foods(),
             )
             .await;

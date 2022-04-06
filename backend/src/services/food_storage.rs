@@ -32,9 +32,7 @@ impl TryFrom<String> for Time {
     type Error = CouldNotParseTimeError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        Ok(Self(crate::utils::time::date_time_from_str(
-            &value,
-        )?))
+        Ok(Self(crate::utils::time::date_time_from_str(&value)?))
     }
 }
 

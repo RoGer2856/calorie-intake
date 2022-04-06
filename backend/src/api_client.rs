@@ -102,12 +102,13 @@ impl ApiClient {
     pub async fn add_food(
         &mut self,
         access_token: &str,
+        username: &str,
         food_request: &AddFoodRequest,
     ) -> Result<StructResponse<AddFoodResponse>, RequestError> {
         self.json_request::<AddFoodRequest, AddFoodResponse>(
             hyper::Method::POST,
             &food_request,
-            &format!("/food?access_token={}", access_token),
+            &format!("/user/{}/food?access_token={}", username, access_token),
         )
         .await
     }
@@ -115,22 +116,11 @@ impl ApiClient {
     pub async fn get_food_list(
         &mut self,
         access_token: &str,
-    ) -> Result<StructResponse<GetFoodListResponse>, RequestError> {
-        self.empty_request_with_json_response::<GetFoodListResponse>(
-            hyper::Method::GET,
-            &format!("/food?access_token={}", access_token),
-        )
-        .await
-    }
-
-    pub async fn get_food_list_of_user(
-        &mut self,
-        access_token: &str,
         username: &str,
     ) -> Result<StructResponse<GetFoodListResponse>, RequestError> {
         self.empty_request_with_json_response::<GetFoodListResponse>(
             hyper::Method::GET,
-            &format!("/food-of/{}?access_token={}", username, access_token),
+            &format!("/user/{}/food?access_token={}", username, access_token),
         )
         .await
     }
@@ -149,11 +139,15 @@ impl ApiClient {
     pub async fn get_food_by_id(
         &mut self,
         access_token: &str,
+        username: &str,
         id: &str,
     ) -> Result<StructResponse<GetFoodByIdResponse>, RequestError> {
         self.empty_request_with_json_response::<GetFoodByIdResponse>(
             hyper::Method::GET,
-            &format!("/food/{}?access_token={}", id, access_token),
+            &format!(
+                "/user/{}/food/{}?access_token={}",
+                username, id, access_token
+            ),
         )
         .await
     }
@@ -161,13 +155,17 @@ impl ApiClient {
     pub async fn update_food_by_id(
         &mut self,
         access_token: &str,
+        username: &str,
         id: &str,
         food: &UpdateFoodRequest,
     ) -> Result<NoBodyResponse, RequestError> {
         self.json_request_with_no_response_body(
             hyper::Method::PUT,
             food,
-            &format!("/food/{}?access_token={}", id, access_token),
+            &format!(
+                "/user/{}/food/{}?access_token={}",
+                username, id, access_token
+            ),
         )
         .await
     }
@@ -175,11 +173,15 @@ impl ApiClient {
     pub async fn delete_food_by_id(
         &mut self,
         access_token: &str,
+        username: &str,
         id: &str,
     ) -> Result<NoBodyResponse, RequestError> {
         self.empty_request_with_no_response_body(
             hyper::Method::DELETE,
-            &format!("/food/{}?access_token={}", id, access_token),
+            &format!(
+                "/user/{}/food/{}?access_token={}",
+                username, id, access_token
+            ),
         )
         .await
     }

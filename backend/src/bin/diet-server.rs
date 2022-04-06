@@ -46,10 +46,14 @@ fn create_food_for_the_last_n_days(days: i64) -> Vec<AddFoodRequest> {
 pub async fn add_foods(
     api_client: &mut diet::ApiClient,
     access_token: String,
+    username: &str,
     foods: &[AddFoodRequest],
 ) {
     for food in foods.iter() {
-        api_client.add_food(&access_token, &food).await.unwrap();
+        api_client
+            .add_food(&access_token, username, &food)
+            .await
+            .unwrap();
     }
 }
 
@@ -88,10 +92,10 @@ pub fn main() {
                 .unwrap();
 
             let foods = create_food_for_the_last_n_days(70);
-            add_foods(&mut api_client, access_token_jane, &foods).await;
+            add_foods(&mut api_client, access_token_jane, "jane", &foods).await;
 
             let foods = create_food_for_the_last_n_days(2);
-            add_foods(&mut api_client, access_token_john, &foods).await;
+            add_foods(&mut api_client, access_token_john, "john", &foods).await;
         }
 
         tokio::signal::ctrl_c().await.unwrap();

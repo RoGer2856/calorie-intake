@@ -72,21 +72,19 @@ pub async fn router(
         static ref GET_USER_LIST: RoutingItem = RoutingItem::new(hyper::Method::GET, "/user-list");
         static ref GET_FOOD_REPORT: RoutingItem =
             RoutingItem::new(hyper::Method::GET, "/food/report");
-        static ref GET_FOOD_LIST: RoutingItem = RoutingItem::new(hyper::Method::GET, "/food");
-        static ref GET_FOOD_LIST_OF: RoutingItem =
-            RoutingItem::new(hyper::Method::GET, "/food-of/([a-zA-Z0-9_]{4, 20})");
-        static ref POST_FOOD: RoutingItem = RoutingItem::new(hyper::Method::POST, "/food");
+        static ref GET_FOOD_LIST: RoutingItem = RoutingItem::new(hyper::Method::GET, "/user/([a-zA-Z0-9_]{4, 20})/food");
+        static ref POST_FOOD: RoutingItem = RoutingItem::new(hyper::Method::POST, "/user/([a-zA-Z0-9_]{4, 20})/food");
         static ref GET_FOOD: RoutingItem = RoutingItem::new(
             hyper::Method::GET,
-            "/food/(food-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
+            "/user/([a-zA-Z0-9_]{4, 20})/food/(food-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
         );
         static ref UPDATE_FOOD: RoutingItem = RoutingItem::new(
             hyper::Method::PUT,
-            "/food/(food-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
+            "/user/([a-zA-Z0-9_]{4, 20})/food/(food-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
         );
         static ref DELETE_FOOD: RoutingItem = RoutingItem::new(
             hyper::Method::DELETE,
-            "/food/(food-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
+            "/user/([a-zA-Z0-9_]{4, 20})/food/(food-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
         );
     }
 
@@ -120,39 +118,77 @@ pub async fn router(
             crate::api::userinfo::get_user_list(req, app_context, authz_info).await
         } else if let Some(_captures) = GET_FOOD_REPORT.match_request(&req.method(), &path) {
             crate::api::food::get_report(req, app_context, authz_info).await
-        } else if let Some(_captures) = GET_FOOD_LIST.match_request(&req.method(), &path) {
-            crate::api::food::get_food_list(req, app_context, authz_info).await
-        } else if let Some(captures) = GET_FOOD_LIST_OF.match_request(&req.method(), &path) {
+        } else if let Some(captures) = GET_FOOD_LIST.match_request(&req.method(), &path) {
             let username = captures
                 .get(1)
                 .ok_or(RoutingError::InvalidCaptureGroupId)
                 .log_routing_error()?
                 .as_str();
-            crate::api::food::get_food_list_of(req, app_context, authz_info, username.to_string())
-                .await
-        } else if let Some(_captures) = POST_FOOD.match_request(&req.method(), &path) {
-            crate::api::food::add_food(req, app_context, authz_info).await
+            crate::api::food::get_food_list(req, app_context, authz_info, username.into()).await
+        } else if let Some(captures) = POST_FOOD.match_request(&req.method(), &path) {
+            let username = captures
+                .get(1)
+                .ok_or(RoutingError::InvalidCaptureGroupId)
+                .log_routing_error()?
+                .as_str();
+            crate::api::food::add_food(req, app_context, authz_info, username.into()).await
         } else if let Some(captures) = GET_FOOD.match_request(&req.method(), &path) {
-            let food_id = captures
+            let username = captures
                 .get(1)
                 .ok_or(RoutingError::InvalidCaptureGroupId)
                 .log_routing_error()?
                 .as_str();
-            crate::api::food::get_food(req, app_context, authz_info, food_id.to_string()).await
+            let food_id = captures
+                .get(2)
+                .ok_or(RoutingError::InvalidCaptureGroupId)
+                .log_routing_error()?
+                .as_str();
+            crate::api::food::get_food(
+                req,
+                app_context,
+                authz_info,
+                username.into(),
+                food_id.into(),
+            )
+            .await
         } else if let Some(captures) = UPDATE_FOOD.match_request(&req.method(), &path) {
-            let food_id = captures
+            let username = captures
                 .get(1)
                 .ok_or(RoutingError::InvalidCaptureGroupId)
                 .log_routing_error()?
                 .as_str();
-            crate::api::food::update_food(req, app_context, authz_info, food_id.to_string()).await
+            let food_id = captures
+                .get(2)
+                .ok_or(RoutingError::InvalidCaptureGroupId)
+                .log_routing_error()?
+                .as_str();
+            crate::api::food::update_food(
+                req,
+                app_context,
+                authz_info,
+                username.into(),
+                food_id.into(),
+            )
+            .await
         } else if let Some(captures) = DELETE_FOOD.match_request(&req.method(), &path) {
-            let food_id = captures
+            let username = captures
                 .get(1)
                 .ok_or(RoutingError::InvalidCaptureGroupId)
                 .log_routing_error()?
                 .as_str();
-            crate::api::food::delete_food(req, app_context, authz_info, food_id.to_string()).await
+            let food_id = captures
+                .get(2)
+                .ok_or(RoutingError::InvalidCaptureGroupId)
+                .log_routing_error()?
+                .as_str();
+            crate::api::food::delete_food(
+                req,
+                app_context,
+                authz_info,
+                username.into(),
+                food_id.into(),
+            )
+            .await
         } else {
             Err(crate::hyper_helpers::ErrorResponse::from_status_code(
                 hyper::StatusCode::NOT_FOUND,

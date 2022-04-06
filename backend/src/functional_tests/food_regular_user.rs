@@ -19,7 +19,10 @@ async fn no_food() {
                 .create_jwt("john".into(), RoleType::RegularUser, 2100)
                 .unwrap();
 
-            let resp = api_client.get_food_list(&access_token).await.unwrap();
+            let resp = api_client
+                .get_food_list(&access_token, "john")
+                .await
+                .unwrap();
 
             assert_eq!(0, resp.object.foods.len());
         },
@@ -47,9 +50,12 @@ async fn get_multiple_foods() {
 
             let foods = generate_example_foods();
 
-            add_foods(&mut api_client, &access_token.clone(), &foods).await;
+            add_foods(&mut api_client, &access_token.clone(), "john", &foods).await;
 
-            let resp = api_client.get_food_list(&access_token).await.unwrap();
+            let resp = api_client
+                .get_food_list(&access_token, "john")
+                .await
+                .unwrap();
 
             assert_eq!(foods.len(), resp.object.foods.len());
             check_food_array_equality(&foods, &resp.object.foods).unwrap();
@@ -83,12 +89,15 @@ async fn multiple_user_foods() {
 
             let foods = generate_example_foods();
 
-            add_foods(&mut api_client, &access_token0.clone(), &foods).await;
-            add_foods(&mut api_client, &access_token1.clone(), &foods).await;
+            add_foods(&mut api_client, &access_token0.clone(), "john", &foods).await;
+            add_foods(&mut api_client, &access_token1.clone(), "jane", &foods).await;
 
             // check the list of foods for access_token0
             {
-                let resp = api_client.get_food_list(&access_token0).await.unwrap();
+                let resp = api_client
+                    .get_food_list(&access_token0, "john")
+                    .await
+                    .unwrap();
 
                 assert_eq!(foods.len(), resp.object.foods.len());
                 check_food_array_equality(&foods, &resp.object.foods).unwrap();
@@ -96,7 +105,10 @@ async fn multiple_user_foods() {
 
             // check the list of foods for access_token1
             {
-                let resp = api_client.get_food_list(&access_token1).await.unwrap();
+                let resp = api_client
+                    .get_food_list(&access_token1, "jane")
+                    .await
+                    .unwrap();
 
                 assert_eq!(foods.len(), resp.object.foods.len());
                 check_food_array_equality(&foods, &resp.object.foods).unwrap();
@@ -126,10 +138,13 @@ async fn get_food_by_id() {
 
             let foods = generate_example_foods();
 
-            let ids = add_foods(&mut api_client, &access_token.clone(), &foods).await;
+            let ids = add_foods(&mut api_client, &access_token.clone(), "john", &foods).await;
 
             for id in ids.iter() {
-                let resp = api_client.get_food_by_id(&access_token, id).await.unwrap();
+                let resp = api_client
+                    .get_food_by_id(&access_token, "john", id)
+                    .await
+                    .unwrap();
                 food_request_array_contains_food(&foods, &resp.object).unwrap();
             }
         },
@@ -157,7 +172,7 @@ async fn update_food() {
 
             let foods = generate_example_foods();
 
-            let ids = add_foods(&mut api_client, &access_token.clone(), &foods).await;
+            let ids = add_foods(&mut api_client, &access_token.clone(), "john", &foods).await;
 
             let id_to_update = ids.get(0).unwrap();
             let updated_food = crate::api::food::messages::UpdateFoodRequest {
@@ -167,12 +182,15 @@ async fn update_food() {
                 time: chrono::Local::now().into(),
             };
             assert!(api_client
-                .update_food_by_id(&access_token, id_to_update, &updated_food)
+                .update_food_by_id(&access_token, "john", id_to_update, &updated_food)
                 .await
                 .is_err());
 
             for id in ids.iter() {
-                let resp = api_client.get_food_by_id(&access_token, id).await.unwrap();
+                let resp = api_client
+                    .get_food_by_id(&access_token, "john", id)
+                    .await
+                    .unwrap();
                 food_request_array_contains_food(&foods, &resp.object).unwrap();
             }
         },
@@ -200,16 +218,19 @@ async fn delete_food_by_id() {
 
             let foods = generate_example_foods();
 
-            let ids = add_foods(&mut api_client, &access_token.clone(), &foods).await;
+            let ids = add_foods(&mut api_client, &access_token.clone(), "john", &foods).await;
 
             let id_to_delete = ids.get(0).unwrap();
             assert!(api_client
-                .delete_food_by_id(&access_token, id_to_delete)
+                .delete_food_by_id(&access_token, "john", id_to_delete)
                 .await
                 .is_err());
 
             for id in ids.iter() {
-                let resp = api_client.get_food_by_id(&access_token, id).await.unwrap();
+                let resp = api_client
+                    .get_food_by_id(&access_token, "john", id)
+                    .await
+                    .unwrap();
                 food_request_array_contains_food(&foods, &resp.object).unwrap();
             }
         },

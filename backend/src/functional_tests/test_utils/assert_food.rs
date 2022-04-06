@@ -62,13 +62,14 @@ pub fn generate_example_foods() -> Vec<AddFoodRequest> {
 pub async fn add_foods(
     api_client: &mut crate::ApiClient,
     access_token: &str,
+    username: &str,
     foods: &[AddFoodRequest],
 ) -> Vec<String> {
     let mut ids = Vec::new();
     for food in foods.iter() {
         ids.push(
             api_client
-                .add_food(access_token, &food)
+                .add_food(access_token, username, &food)
                 .await
                 .unwrap()
                 .object
