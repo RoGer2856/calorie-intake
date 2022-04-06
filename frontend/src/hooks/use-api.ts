@@ -32,12 +32,11 @@ export default function useApi(): UseApiHandler {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function handleErrorResponse(response: Response) {
-    if (response.bodyUsed) {
-      const data = (await response.json()) as IErrorMessage;
+    response.json().then((data: IErrorMessage) => {
       setErrorMessage(data.reason);
-    } else {
+    }).catch(() => {
       setErrorMessage(`Error: Status = ${response.status}, StatusText = ${response.statusText}`)
-    }
+    });
   }
 
   async function getUserInfo(): Promise<IUserInfo | null> {
