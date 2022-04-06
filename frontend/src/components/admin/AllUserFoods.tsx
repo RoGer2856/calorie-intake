@@ -19,7 +19,6 @@ export default function AllUserFoods(props: {
 	}, []);
 
 	useEffect(() => {
-		setSelectedUserInfo(props.myUserInfo);
 		fetchUserInfos();
 	}, [fetchUserInfos])
 

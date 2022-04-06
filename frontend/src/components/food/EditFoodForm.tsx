@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from "react";
+import { ReactElement } from "react";
 import useApi from "../../hooks/use-api";
 import useInput from "../../hooks/use-input";
 import { IFoodResponse, IUpdateFoodRequest } from "../../messages/Food";
@@ -19,23 +19,17 @@ export default function EditFoodForm(props: {
 }): ReactElement {
     const [apiFeedback, api] = useApi();
 
-    let nameInput = useInput('', (name: string) => {
+    let nameInput = useInput(props.food.name, (name: string) => {
         return name.length !== 0;
     });
 
-    let caloriesInput = useInput('', (calories: string) => {
+    let caloriesInput = useInput(props.food.calories.toString(), (calories: string) => {
         return true;
     });
 
-    let timeInput = useInput('', (time: string) => {
+    let timeInput = useInput(dateToDatetimeLocalInput(new Date(props.food.time)), (time: string) => {
         return true;
     });
-
-    useEffect(() => {
-        nameInput.reset(props.food.name);
-        caloriesInput.reset(props.food.calories.toString());
-        timeInput.reset(dateToDatetimeLocalInput(new Date(props.food.time)));
-    }, [props.food]);
 
     async function submitHandler(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
