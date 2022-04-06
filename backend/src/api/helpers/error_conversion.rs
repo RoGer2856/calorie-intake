@@ -7,13 +7,13 @@ use crate::utils::*;
 impl From<DeserializeJsonRequestError> for ErrorResponse {
     fn from(e: DeserializeJsonRequestError) -> Self {
         let msg = match e {
-            DeserializeJsonRequestError::Hyper(_) => "Cannot read bytes from stream",
-            DeserializeJsonRequestError::Utf8(_) => "Cannot decode UTF8 data",
-            DeserializeJsonRequestError::SerdeJson(_) => "Invalid JSON object",
+            DeserializeJsonRequestError::Hyper(_) => "Cannot read bytes from stream".into(),
+            DeserializeJsonRequestError::Utf8(_) => "Cannot decode UTF8 data".into(),
+            DeserializeJsonRequestError::SerdeJson(e) => format!("Invalid JSON object, error = {}", e),
         };
 
         let msg = ErrorMessage {
-            reason: msg.to_string(),
+            reason: msg,
         };
 
         msg.into()
