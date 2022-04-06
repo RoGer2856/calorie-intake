@@ -6,14 +6,6 @@ export default function RegularUserLayout(props: {
     userInfo: IUserInfo,
     children: ReactNode
 }): ReactElement {
-    const navLinkClassName = (v: { isActive: boolean }) => {
-        if (v.isActive) {
-            return "nav-item active";
-        } else {
-            return "nav-item";
-        }
-    };
-
     return (
         <>
             <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -26,7 +18,8 @@ export default function RegularUserLayout(props: {
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
                                 <NavLink
-                                    className={navLinkClassName}
+                                    className={({ isActive }) =>
+                                        (isActive ? "nav-link active" : "nav-link active")}
                                     to="/my-consumption"
                                 >
                                     My consumption
@@ -34,7 +27,8 @@ export default function RegularUserLayout(props: {
                             </li>
                             <li className="nav-item">
                                 <NavLink
-                                    className={navLinkClassName}
+                                    className={({ isActive }) =>
+                                        (isActive ? "nav-link active" : "nav-link active")}
                                     to="/everyones-consumption"
                                 >
                                     Everyone's consumption
@@ -42,7 +36,8 @@ export default function RegularUserLayout(props: {
                             </li>
                             <li className="nav-item">
                                 <NavLink
-                                    className={navLinkClassName}
+                                    className={({ isActive }) =>
+                                        (isActive ? "nav-link active" : "nav-link active")}
                                     to="/report"
                                 >
                                     Report
