@@ -1,24 +1,24 @@
 import { ReactElement, ReactNode } from "react";
-import { UseApiHandler } from "../hooks/use-api";
+import { UseApiFeedback } from "../hooks/use-api";
 import ErrorView from "./ErrorView";
 import Loading from "./Loading";
 
 export default function UseApiView(props: {
-	api: UseApiHandler,
+	apiFeedback: UseApiFeedback,
 	children: ReactNode,
 }): ReactElement {
 	return (
 		<>
-			{props.api.isLoading
+			{props.apiFeedback.isLoading
 				?
 				<Loading />
 				:
 				<>
-					{props.api.errorMessage === null
+					{props.apiFeedback.errorMessage === null
 						?
 						props.children
 						:
-						<ErrorView errorMessage={props.api.errorMessage} />
+						<ErrorView errorMessage={props.apiFeedback.errorMessage} />
 					}
 				</>
 			}

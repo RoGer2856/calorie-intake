@@ -2,13 +2,15 @@ import { ReactElement } from "react";
 import useApi from "../../hooks/use-api";
 import useInput from "../../hooks/use-input";
 import { IAddFoodResponse, IFoodRequest } from "../../messages/Food";
+import { IUserInfo } from "../../model/UserInfo";
 import { datetimeLocalInputToRfc3339 } from "../../utils/time";
 import UseApiView from "../UseApiView";
 
 export default function AddFoodForm(props: {
     onFoodAdded: (id: string) => void,
+    userInfo: IUserInfo,
 }): ReactElement {
-    const api = useApi();
+    const [apiFeedback, api] = useApi();
 
     let nameInput = useInput('', (name: string) => {
         return name.length !== 0;
@@ -31,7 +33,7 @@ export default function AddFoodForm(props: {
             time: datetimeLocalInputToRfc3339(timeInput.value),
         }
 
-        let response = await api.addFood(food);
+        let response = await api.addFood(props.userInfo.username, food);
         if (response !== null) {
             let data = response as IAddFoodResponse;
             props.onFoodAdded(data.id);
@@ -97,7 +99,7 @@ export default function AddFoodForm(props: {
                     Add food
                 </button>
 
-                <UseApiView api={api}>
+                <UseApiView apiFeedback={apiFeedback}>
                     <></>
                 </UseApiView>
             </form>

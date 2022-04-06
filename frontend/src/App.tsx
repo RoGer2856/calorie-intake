@@ -9,7 +9,7 @@ import { IUserInfo, Role } from './model/UserInfo';
 import { userInfoActions } from './store/user-info';
 
 function App() {
-  const api = useApi();
+  const [apiFeedback, api] = useApi();
 
   const dispatch = useDispatch();
 
@@ -29,7 +29,7 @@ function App() {
 
   return (
     <>
-      <UseApiView api={api}>
+      <UseApiView apiFeedback={apiFeedback}>
         <>
           {userInfo !== null
             ?

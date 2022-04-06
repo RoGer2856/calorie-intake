@@ -12,23 +12,25 @@ import {
   IGetUserListResponse,
   userInfoResponseToUserInfo,
 } from "../messages/Food";
-import { IUserInfo, Role } from "../model/UserInfo";
+import { IUserInfo } from "../model/UserInfo";
 
-export type UseApiHandler = {
+export type UseApiFeedback = {
   isLoading: boolean;
   errorMessage: string | null;
+}
+
+export type UseApiHandler = {
   getUserInfo: () => Promise<IUserInfo | null>;
   getUserList: () => Promise<IUserInfo[] | null>;
-  addFood: (food: IFoodRequest) => Promise<IAddFoodResponse | null>;
-  getFood: (id: String) => Promise<IFoodResponse | null>;
-  updateFood: (id: String, food: IUpdateFoodRequest) => Promise<{} | null>;
-  deleteFood: (id: String) => Promise<{} | null>;
-  getFoodList: () => Promise<IGetFoodListResponse | null>;
-  getFoodListOf: (username: string) => Promise<IGetFoodListResponse | null>;
+  addFood: (username: string, food: IFoodRequest) => Promise<IAddFoodResponse | null>;
+  getFood: (username: string, id: String) => Promise<IFoodResponse | null>;
+  updateFood: (username: string, id: String, food: IUpdateFoodRequest) => Promise<{} | null>;
+  deleteFood: (username: string, id: String) => Promise<{} | null>;
+  getFoodList: (username: string) => Promise<IGetFoodListResponse | null>;
   getFoodReport: () => Promise<IGetFoodReportResponse | null>;
 };
 
-export default function useApi(): UseApiHandler {
+export default function useApi(): [UseApiFeedback, UseApiHandler] {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -87,12 +89,12 @@ export default function useApi(): UseApiHandler {
     }
   }
 
-  async function addFood(food: IFoodRequest): Promise<IAddFoodResponse | null> {
+  async function addFood(username: string, food: IFoodRequest): Promise<IAddFoodResponse | null> {
     setIsLoading(true);
     setErrorMessage(null);
 
     let response: Response = await fetch(
-      `/api/food?access_token=${ACCESS_TOKEN}`,
+      `/api/user/${username}/food?access_token=${ACCESS_TOKEN}`,
       {
         method: "POST",
         body: JSON.stringify(food),
@@ -110,12 +112,12 @@ export default function useApi(): UseApiHandler {
     }
   }
 
-  async function getFood(id: String): Promise<IFoodResponse | null> {
+  async function getFood(username: string, id: String): Promise<IFoodResponse | null> {
     setIsLoading(true);
     setErrorMessage(null);
 
     let response: Response = await fetch(
-      `/api/food/${id}?access_token=${ACCESS_TOKEN}`,
+      `/api/user/${username}/food/${id}?access_token=${ACCESS_TOKEN}`,
       {
         method: "GET",
       }
@@ -132,12 +134,12 @@ export default function useApi(): UseApiHandler {
     }
   }
 
-  async function updateFood(id: String, food: IUpdateFoodRequest): Promise<{} | null> {
+  async function updateFood(username: string, id: String, food: IUpdateFoodRequest): Promise<{} | null> {
     setIsLoading(true);
     setErrorMessage(null);
 
     let response: Response = await fetch(
-      `/api/food/${id}?access_token=${ACCESS_TOKEN}`,
+      `/api/user/${username}/food/${id}?access_token=${ACCESS_TOKEN}`,
       {
         method: "PUT",
         body: JSON.stringify(food),
@@ -155,12 +157,12 @@ export default function useApi(): UseApiHandler {
     }
   }
 
-  async function deleteFood(id: String): Promise<{} | null> {
+  async function deleteFood(username: string, id: String): Promise<{} | null> {
     setIsLoading(true);
     setErrorMessage(null);
 
     let response: Response = await fetch(
-      `/api/food/${id}?access_token=${ACCESS_TOKEN}`,
+      `/api/user/${username}/food/${id}?access_token=${ACCESS_TOKEN}`,
       {
         method: "DELETE",
       }
@@ -177,34 +179,12 @@ export default function useApi(): UseApiHandler {
     }
   }
 
-  async function getFoodList(): Promise<IGetFoodListResponse | null> {
+  async function getFoodList(username: string): Promise<IGetFoodListResponse | null> {
     setIsLoading(true);
     setErrorMessage(null);
 
     let response: Response = await fetch(
-      `/api/food?access_token=${ACCESS_TOKEN}`,
-      {
-        method: "GET",
-      }
-    );
-
-    if (response.ok) {
-      setIsLoading(false);
-
-      return (await response.json()) as IGetFoodListResponse;
-    } else {
-      setIsLoading(false);
-      await handleErrorResponse(response);
-      return null;
-    }
-  }
-
-  async function getFoodListOf(username: string): Promise<IGetFoodListResponse | null> {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    let response: Response = await fetch(
-      `/api/food-of/${username}?access_token=${ACCESS_TOKEN}`,
+      `/api/user/${username}/food?access_token=${ACCESS_TOKEN}`,
       {
         method: "GET",
       }
@@ -243,17 +223,20 @@ export default function useApi(): UseApiHandler {
     }
   }
 
-  return {
-    isLoading,
-    errorMessage,
-    getUserInfo,
-    getUserList,
-    addFood,
-    getFood,
-    updateFood,
-    deleteFood,
-    getFoodList,
-    getFoodListOf,
-    getFoodReport,
-  };
+  return [
+    {
+      isLoading,
+      errorMessage,
+    },
+    {
+      getUserInfo,
+      getUserList,
+      addFood,
+      getFood,
+      updateFood,
+      deleteFood,
+      getFoodList,
+      getFoodReport,
+    }
+  ];
 }

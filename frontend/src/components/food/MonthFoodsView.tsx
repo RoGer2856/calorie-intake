@@ -1,14 +1,15 @@
 import { ReactElement } from "react";
 import { IDayFoods } from "../../model/Foods";
+import { IUserInfo } from "../../model/UserInfo";
 import { monthIndexToMonthName } from "../../utils/time";
 import DayFoodsView from "./DayFoodsView";
 import { IEditEvents } from "./EditFoodForm";
 
 export default function MonthFoodsView(props: {
-    maxCaloriesPerDay: number,
     month: number,
     foods: IDayFoods[],
     onEditEvent: IEditEvents,
+    userInfo: IUserInfo,
 }): ReactElement {
     return (
         <>
@@ -19,7 +20,7 @@ export default function MonthFoodsView(props: {
                         return (
                             <DayFoodsView
                                 key={day.dateOfMonth}
-                                maxCaloriesPerDay={props.maxCaloriesPerDay}
+                                userInfo={props.userInfo}
                                 month={props.month}
                                 dateOfMonth={day.dateOfMonth}
                                 dayOfTheWeek={day.dayOfTheWeek}

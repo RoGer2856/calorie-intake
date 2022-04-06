@@ -2,14 +2,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { ReactElement } from "react";
 import useApi from '../../hooks/use-api';
 import { createAllFoods } from '../../model/Foods';
+import { IUserInfo } from '../../model/UserInfo';
 import AddFoodForm from './AddFoodForm';
 import AllFoods from './AllFoods';
 import { IEditEvents } from './EditFoodForm';
 
 export default function MyFoods(props: {
-    maxCaloriesPerDay: number,
+    userInfo: IUserInfo,
 }): ReactElement {
-    const api = useApi();
+    const [, api] = useApi();
 
     const [foods, setFoods] = useState(createAllFoods(null));
     const [showAddFood, setShowAddFood] = useState(false);
@@ -26,18 +27,18 @@ export default function MyFoods(props: {
     };
 
     let fetchFoods = useCallback(async function () {
-        let response = await api.getFoodList();
+        let response = await api.getFoodList(props.userInfo.username);
         if (response !== null) {
             setFoods(createAllFoods(response!.foods));
         }
-    }, []);
+    }, [props.userInfo]);
 
     useEffect(() => {
         fetchFoods();
-    }, [fetchFoods]);
+    }, [fetchFoods, props.userInfo]);
 
     async function foodAddedHandler(id: string) {
-        let response = await api.getFoodList();
+        let response = await api.getFoodList(props.userInfo.username);
         if (response !== null) {
             setFoods(createAllFoods(response!.foods));
         }
@@ -63,7 +64,10 @@ export default function MyFoods(props: {
                         Close
                     </button>
                     <div className="card p-2 m-2">
-                        <AddFoodForm onFoodAdded={foodAddedHandler} />
+                        <AddFoodForm
+                            onFoodAdded={foodAddedHandler}
+                            userInfo={props.userInfo}
+                        />
                     </div>
                 </>
                 :
@@ -75,7 +79,7 @@ export default function MyFoods(props: {
                 </button>}
 
             <AllFoods
-                maxCaloriesPerDay={props.maxCaloriesPerDay}
+                userInfo={props.userInfo}
                 allFoods={foods}
                 onEditEvent={editEventHandler}
             />

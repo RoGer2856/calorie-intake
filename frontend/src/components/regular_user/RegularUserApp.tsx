@@ -14,7 +14,7 @@ export default function RegularUserApp(props: {
                 <Routes>
                     <Route path="/">
                         <Route index element={<Navigate replace to="/my-consumption" />} />
-                        <Route path="/my-consumption" element={<MyFoods maxCaloriesPerDay={props.userInfo.maxCaloriesPerDay} />} />
+                        <Route path="/my-consumption" element={<MyFoods userInfo={props.userInfo} />} />
                     </Route>
                     <Route path="*" element={<PageNotFound />} />
                 </Routes>

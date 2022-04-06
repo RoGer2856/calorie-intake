@@ -2,6 +2,7 @@ import { ReactElement, useEffect } from "react";
 import useApi from "../../hooks/use-api";
 import useInput from "../../hooks/use-input";
 import { IFoodResponse, IUpdateFoodRequest } from "../../messages/Food";
+import { IUserInfo } from "../../model/UserInfo";
 import { datetimeLocalInputToRfc3339, dateToDatetimeLocalInput } from "../../utils/time";
 import UseApiView from "../UseApiView";
 
@@ -12,10 +13,11 @@ export interface IEditEvents {
 }
 
 export default function EditFoodForm(props: {
+    userInfo: IUserInfo,
     food: IFoodResponse,
     onEditEvent: IEditEvents,
 }): ReactElement {
-    const api = useApi();
+    const [apiFeedback, api] = useApi();
 
     let nameInput = useInput('', (name: string) => {
         return name.length !== 0;
@@ -44,7 +46,7 @@ export default function EditFoodForm(props: {
             time: datetimeLocalInputToRfc3339(timeInput.value),
         }
 
-        let response = await api.updateFood(props.food.id, food);
+        let response = await api.updateFood(props.userInfo.username, props.food.id, food);
         if (response !== null) {
             props.onEditEvent.onEdited(props.food.id);
         }
@@ -55,7 +57,7 @@ export default function EditFoodForm(props: {
     }
 
     async function deleteHandler() {
-        let response = await api.deleteFood(props.food.id);
+        let response = await api.deleteFood(props.userInfo.username, props.food.id);
         if (response !== null) {
             props.onEditEvent.onDeleted(props.food.id);
         }
@@ -133,7 +135,7 @@ export default function EditFoodForm(props: {
                     Delete
                 </button>
 
-                <UseApiView api={api}>
+                <UseApiView apiFeedback={apiFeedback}>
                     <></>
                 </UseApiView>
             </form>

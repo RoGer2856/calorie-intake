@@ -1,13 +1,12 @@
 import { ReactElement, useCallback, useEffect, useState } from "react";
 import useApi from "../../hooks/use-api";
 import { IGetFoodReportResponse } from "../../messages/Food";
-import ErrorView from "../ErrorView";
 import Loading from "../Loading";
 import UseApiView from "../UseApiView";
 import FoodReport from "./FoodReport";
 
 export default function ReportScreen(): ReactElement {
-    const api = useApi();
+    const [apiFeedback, api] = useApi();
 
     const [report, setReport] = useState<IGetFoodReportResponse | null>(null);
 
@@ -27,7 +26,7 @@ export default function ReportScreen(): ReactElement {
         <>
             <p>Food report</p>
 
-            <UseApiView api={api}>
+            <UseApiView apiFeedback={apiFeedback}>
                 <>
                     {report === null
                         ?

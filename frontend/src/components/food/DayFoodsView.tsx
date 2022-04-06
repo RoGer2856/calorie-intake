@@ -5,15 +5,15 @@ import { dayOfTheWeekToDayName, monthIndexToMonthName } from "../../utils/time";
 import EditFoodForm, { IEditEvents } from "./EditFoodForm";
 import { IUserInfoState } from "../../store/user-info";
 import { useSelector } from "react-redux";
-import { Role } from "../../model/UserInfo";
+import { IUserInfo, Role } from "../../model/UserInfo";
 
 export default function DayFoodsView(props: {
-    maxCaloriesPerDay: number,
     month: number,
     dateOfMonth: number,
     dayOfTheWeek: number,
     foods: IFoodResponse[],
     onEditEvent: IEditEvents,
+    userInfo: IUserInfo,
 }): ReactElement {
     let [foodIdUnderEditing, setFoodIdUnderEditing] = useState<String | null>(null);
 
@@ -24,7 +24,7 @@ export default function DayFoodsView(props: {
         calories += food.calories;
     }
 
-    const caloriesExceededMaximum = calories > props.maxCaloriesPerDay;
+    const caloriesExceededMaximum = calories > props.userInfo.maxCaloriesPerDay;
 
     function editHandler(foodId: string) {
         setFoodIdUnderEditing(foodId);
@@ -55,7 +55,7 @@ export default function DayFoodsView(props: {
                 {caloriesExceededMaximum
                     ?
                     <div className="alert alert-danger">
-                        Exceeded the daily consumption limit ({props.maxCaloriesPerDay} kcal)
+                        Exceeded the daily consumption limit ({props.userInfo.maxCaloriesPerDay} kcal)
                     </div>
                     :
                     <></>}
@@ -66,6 +66,7 @@ export default function DayFoodsView(props: {
                                 <EditFoodForm
                                     food={food}
                                     onEditEvent={editEventHandler}
+                                    userInfo={props.userInfo}
                                 />
                             </div>
                         );

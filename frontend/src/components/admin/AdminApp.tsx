@@ -16,8 +16,8 @@ export default function AdminApp(props: {
                 <Routes>
                     <Route path="/">
                         <Route index element={<Navigate replace to="/my-consumption" />} />
-                        <Route path="/my-consumption" element={<MyFoods maxCaloriesPerDay={props.userInfo.maxCaloriesPerDay} />} />
-                        <Route path="/everyones-consumption" element={<AllUserFoods />} />
+                        <Route path="/my-consumption" element={<MyFoods userInfo={props.userInfo} />} />
+                        <Route path="/everyones-consumption" element={<AllUserFoods myUserInfo={props.userInfo} />} />
                         <Route path="/report" element={<ReportScreen />} />
                     </Route>
                     <Route path="*" element={<PageNotFound />} />
