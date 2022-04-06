@@ -9,7 +9,7 @@ import { IUserInfo, Role } from './model/UserInfo';
 import { userInfoActions } from './store/user-info';
 
 function App() {
-  const [apiFeedback, api] = useApi();
+  const api = useApi();
 
   const dispatch = useDispatch();
 
@@ -21,7 +21,7 @@ function App() {
       setUserInfo(response as IUserInfo);
       dispatch(userInfoActions.setUserinfo(response as IUserInfo));
     }
-  }, [dispatch, api]);
+  }, [dispatch]);
 
   useEffect(() => {
     fetchUserInfo();
@@ -29,7 +29,7 @@ function App() {
 
   return (
     <>
-      <UseApiView apiFeedback={apiFeedback}>
+      <UseApiView api={api}>
         <>
           {userInfo !== null
             ?

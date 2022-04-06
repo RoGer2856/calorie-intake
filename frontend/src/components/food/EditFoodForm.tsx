@@ -17,7 +17,7 @@ export default function EditFoodForm(props: {
     food: IFoodResponse,
     onEditEvent: IEditEvents,
 }): ReactElement {
-    const [apiFeedback, api] = useApi();
+    const api = useApi();
 
     let nameInput = useInput(props.food.name, (name: string) => {
         return name.length !== 0;
@@ -129,7 +129,7 @@ export default function EditFoodForm(props: {
                     Delete
                 </button>
 
-                <UseApiView apiFeedback={apiFeedback}>
+                <UseApiView api={api}>
                     <></>
                 </UseApiView>
             </form>

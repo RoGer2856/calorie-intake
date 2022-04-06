@@ -11,7 +11,7 @@ import { IEditEvents } from './EditFoodForm';
 export default function MyFoods(props: {
     userInfo: IUserInfo,
 }): ReactElement {
-    const [apiFeedback, api] = useApi();
+    const api = useApi();
 
     const [foods, setFoods] = useState(createAllFoods(null));
     const [showAddFood, setShowAddFood] = useState(false);
@@ -32,7 +32,7 @@ export default function MyFoods(props: {
         if (response !== null) {
             setFoods(createAllFoods(response!.foods));
         }
-    }, [props.userInfo, api]);
+    }, [props.userInfo]);
 
     useEffect(() => {
         fetchFoods();
@@ -55,7 +55,7 @@ export default function MyFoods(props: {
 
     return (
         <>
-            <UseApiView apiFeedback={apiFeedback} >
+            <UseApiView api={api} >
                 {showAddFood
                     ?
                     <>

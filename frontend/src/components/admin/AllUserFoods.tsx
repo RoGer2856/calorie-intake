@@ -8,7 +8,7 @@ import UseApiView from "../UseApiView";
 export default function AllUserFoods(props: {
     myUserInfo: IUserInfo
 }): ReactElement {
-	const [apiFeedback, api] = useApi();
+	const api = useApi();
 	const [userInfos, setUserInfos] = useState<IUserInfo[]>([]);
 	let [searchParams, setSearchParams] = useSearchParams();
 	const [selectedUserInfo, setSelectedUserInfo] = useState<IUserInfo | null>(null);
@@ -45,7 +45,7 @@ export default function AllUserFoods(props: {
 		if (response !== null) {
 			setUserInfos(response);
 		}
-	}, [api]);
+	}, []);
 
 	useEffect(() => {
 		fetchUserInfos();
@@ -53,7 +53,7 @@ export default function AllUserFoods(props: {
 
 	return (
 		<>
-			<UseApiView apiFeedback={apiFeedback} >
+			<UseApiView api={api} >
 				<form>
 					<select
 						onChange={changeHandler}

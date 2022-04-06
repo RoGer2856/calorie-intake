@@ -6,7 +6,7 @@ import UseApiView from "../UseApiView";
 import FoodReport from "./FoodReport";
 
 export default function ReportScreen(): ReactElement {
-    const [apiFeedback, api] = useApi();
+    const api = useApi();
 
     const [report, setReport] = useState<IGetFoodReportResponse | null>(null);
 
@@ -16,7 +16,7 @@ export default function ReportScreen(): ReactElement {
             const report = response as IGetFoodReportResponse;
             setReport(report);
         }
-    }, [api]);
+    }, []);
 
     useEffect(() => {
         fetchFoodReport();
@@ -26,7 +26,7 @@ export default function ReportScreen(): ReactElement {
         <>
             <p>Food report</p>
 
-            <UseApiView apiFeedback={apiFeedback}>
+            <UseApiView api={api}>
                 <>
                     {report === null
                         ?

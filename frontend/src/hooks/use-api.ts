@@ -14,12 +14,9 @@ import {
 } from "../messages/Food";
 import { IUserInfo } from "../model/UserInfo";
 
-export type UseApiFeedback = {
+export type UseApiHandler = {
   isLoading: boolean;
   errorMessage: string | null;
-}
-
-export type UseApiHandler = {
   getUserInfo: () => Promise<IUserInfo | null>;
   getUserList: () => Promise<IUserInfo[] | null>;
   addFood: (username: string, food: IFoodRequest) => Promise<IAddFoodResponse | null>;
@@ -30,12 +27,7 @@ export type UseApiHandler = {
   getFoodReport: () => Promise<IGetFoodReportResponse | null>;
 };
 
-export default function useApi(): [UseApiFeedback, UseApiHandler] {
-  let [api, ] = useState(useApiHelper());
-  return api;
-}
-
-function useApiHelper(): [UseApiFeedback, UseApiHandler] {
+export default function useApi(): UseApiHandler {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -228,20 +220,16 @@ function useApiHelper(): [UseApiFeedback, UseApiHandler] {
     }
   }
 
-  return [
-    {
-      isLoading,
-      errorMessage,
-    },
-    {
-      getUserInfo,
-      getUserList,
-      addFood,
-      getFood,
-      updateFood,
-      deleteFood,
-      getFoodList,
-      getFoodReport,
-    }
-  ];
+  return {
+    isLoading,
+    errorMessage,
+    getUserInfo,
+    getUserList,
+    addFood,
+    getFood,
+    updateFood,
+    deleteFood,
+    getFoodList,
+    getFoodReport,
+  };
 }

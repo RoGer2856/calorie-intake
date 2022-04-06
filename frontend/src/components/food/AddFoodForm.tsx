@@ -10,7 +10,7 @@ export default function AddFoodForm(props: {
     onFoodAdded: (id: string) => void,
     userInfo: IUserInfo,
 }): ReactElement {
-    const [apiFeedback, api] = useApi();
+    const api = useApi();
 
     let nameInput = useInput('', (name: string) => {
         return name.length !== 0;
@@ -99,7 +99,7 @@ export default function AddFoodForm(props: {
                     Add food
                 </button>
 
-                <UseApiView apiFeedback={apiFeedback}>
+                <UseApiView api={api}>
                     <></>
                 </UseApiView>
             </form>
