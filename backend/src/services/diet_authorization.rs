@@ -15,7 +15,7 @@ impl std::fmt::Display for CouldNotParseRoleError {
 }
 
 #[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(try_from = "String", into = "String")]
+#[serde(try_from = "&str", into = "String")]
 pub enum RoleType {
     Admin,
     RegularUser,
@@ -30,14 +30,14 @@ impl Into<String> for RoleType {
     }
 }
 
-impl TryFrom<String> for RoleType {
+impl TryFrom<&str> for RoleType {
     type Error = CouldNotParseRoleError;
 
-    fn try_from(value: String) -> Result<Self, Self::Error> {
-        match value.as_str() {
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
             "admin" => Ok(RoleType::Admin),
             "regular_user" => Ok(RoleType::RegularUser),
-            _ => Err(CouldNotParseRoleError(value)),
+            _ => Err(CouldNotParseRoleError(value.to_string())),
         }
     }
 }
@@ -142,7 +142,7 @@ impl DietAuthorization {
 
         Ok(AuthorizationInfo {
             username: username.clone(),
-            role: RoleType::try_from(role.clone())?,
+            role: RoleType::try_from(role.as_str())?,
             max_calories_per_day: max_calories_per_day.parse()?,
         })
     }

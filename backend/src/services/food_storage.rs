@@ -19,7 +19,7 @@ impl std::fmt::Display for CouldNotParseTimeError {
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-#[serde(try_from = "String", into = "String")]
+#[serde(try_from = "&str", into = "String")]
 pub struct Time(pub chrono::DateTime<chrono::Local>);
 
 impl Into<String> for Time {
@@ -28,11 +28,11 @@ impl Into<String> for Time {
     }
 }
 
-impl TryFrom<String> for Time {
+impl TryFrom<&str> for Time {
     type Error = CouldNotParseTimeError;
 
-    fn try_from(value: String) -> Result<Self, Self::Error> {
-        Ok(Self(crate::utils::time::date_time_from_str(&value)?))
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        Ok(Self(crate::utils::time::date_time_from_str(value)?))
     }
 }
 

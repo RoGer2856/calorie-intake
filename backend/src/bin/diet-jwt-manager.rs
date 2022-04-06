@@ -62,7 +62,7 @@ pub fn main() {
         let jwt = diet_authorization
             .create_jwt(
                 username.to_string(),
-                diet::services::RoleType::try_from(role.to_string()).unwrap(),
+                diet::services::RoleType::try_from(role).unwrap(),
                 max_calories_per_day.parse().unwrap(),
             )
             .unwrap();
