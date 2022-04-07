@@ -26,7 +26,8 @@ export default function RegularUserLayout(props: {
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
                             <NavLink
-                                className={navLinkClassName}
+                                className={({ isActive }) =>
+                                    (isActive ? "nav-link active" : "nav-link active")}
                                 to="/my-consumption"
                             >
                                 My consumption
