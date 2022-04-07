@@ -62,12 +62,12 @@ export default function EditFoodForm(props: {
             <form onSubmit={submitHandler}>
                 <div>
                     <label
-                        htmlFor="name"
+                        htmlFor="edit-name"
                         className="form-label">What did you eat?</label>
                     <input
                         className="form-control"
                         type='text'
-                        id='name'
+                        id='edit-name'
                         value={nameInput.value}
                         onChange={nameInput.valueChangeHandler}
                         onBlur={nameInput.inputBlurHandler}
@@ -77,28 +77,27 @@ export default function EditFoodForm(props: {
 
                 <div>
                     <label
-                        htmlFor="calories"
+                        htmlFor="edit-calories"
                         className="form-label">How much calories did you eat?</label>
                     <input
-                        className="form-control"
+                        className="form-control kcal"
                         type='number'
-                        id='calories'
+                        id='edit-calories'
                         value={caloriesInput.value}
                         onChange={caloriesInput.valueChangeHandler}
                         onBlur={caloriesInput.inputBlurHandler}
                         required
                     />
-                    kcal
                 </div>
 
                 <div>
                     <label
-                        htmlFor="time"
+                        htmlFor="edit-time"
                         className="form-label">When did you eat it (UTC timezone)?</label>
                     <input
                         className="form-control"
                         type='datetime-local'
-                        id='time'
+                        id='edit-time'
                         value={timeInput.value}
                         onChange={timeInput.valueChangeHandler}
                         onBlur={timeInput.inputBlurHandler}
@@ -107,7 +106,7 @@ export default function EditFoodForm(props: {
                 </div>
 
                 <button
-                    className="btn btn-primary m-1"
+                    className="btn btn-primary me-1 my-1"
                     type="button"
                     onClick={cancelHandler}
                 >
@@ -115,14 +114,14 @@ export default function EditFoodForm(props: {
                 </button>
 
                 <button
-                    className="btn btn-primary"
+                    className="btn btn-primary me-1 my-1"
                     type="submit"
                 >
                     Save
                 </button>
 
                 <button
-                    className="btn btn-primary m-1"
+                    className="btn btn-primary me-1 my-1"
                     type="button"
                     onClick={deleteHandler}
                 >

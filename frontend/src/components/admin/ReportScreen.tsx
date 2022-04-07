@@ -24,8 +24,6 @@ export default function ReportScreen(): ReactElement {
 
     return (
         <>
-            <p>Food report</p>
-
             <UseApiView api={api}>
                 <>
                     {report === null

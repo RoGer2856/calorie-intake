@@ -49,12 +49,12 @@ export default function AddFoodForm(props: {
             <form onSubmit={submitHandler}>
                 <div>
                     <label
-                        htmlFor="name"
+                        htmlFor="add-name"
                         className="form-label">What did you eat?</label>
                     <input
                         className="form-control"
                         type='text'
-                        id='name'
+                        id='add-name'
                         value={nameInput.value}
                         onChange={nameInput.valueChangeHandler}
                         onBlur={nameInput.inputBlurHandler}
@@ -64,12 +64,12 @@ export default function AddFoodForm(props: {
 
                 <div>
                     <label
-                        htmlFor="calories"
+                        htmlFor="add-calories"
                         className="form-label">How much calories did you eat?</label>
                     <input
                         className="form-control"
                         type='number'
-                        id='calories'
+                        id='add-calories'
                         value={caloriesInput.value}
                         onChange={caloriesInput.valueChangeHandler}
                         onBlur={caloriesInput.inputBlurHandler}
@@ -79,12 +79,12 @@ export default function AddFoodForm(props: {
 
                 <div>
                     <label
-                        htmlFor="time"
+                        htmlFor="add-time"
                         className="form-label">When did you eat it (UTC timezone)?</label>
                     <input
                         className="form-control"
                         type='datetime-local'
-                        id='time'
+                        id='add-time'
                         value={timeInput.value}
                         onChange={timeInput.valueChangeHandler}
                         onBlur={timeInput.inputBlurHandler}
@@ -93,7 +93,7 @@ export default function AddFoodForm(props: {
                 </div>
 
                 <button
-                    className="btn btn-primary"
+                    className="btn btn-primary my-1"
                     type="submit"
                 >
                     Add food

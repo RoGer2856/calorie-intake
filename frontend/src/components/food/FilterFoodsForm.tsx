@@ -41,7 +41,7 @@ export default function FilterFoodsForm(props: {
 				<div className="row p-1">
 					<div className="col-2">
 						<label
-							htmlFor="fromTime"
+							htmlFor="filter-fromTime"
 							className="form-label"
 						>
 							From time
@@ -51,7 +51,7 @@ export default function FilterFoodsForm(props: {
 						<input
 							className="form-control"
 							type='datetime-local'
-							id='time'
+							id='filter-fromTime'
 							value={fromTimeInput.value}
 							onChange={fromTimeInput.valueChangeHandler}
 							onBlur={fromTimeInput.inputBlurHandler}
@@ -63,7 +63,7 @@ export default function FilterFoodsForm(props: {
 				<div className="row p-1">
 					<div className="col-2">
 						<label
-							htmlFor="toTime"
+							htmlFor="filter-toTime"
 							className="form-label"
 						>
 							To time
@@ -73,7 +73,7 @@ export default function FilterFoodsForm(props: {
 						<input
 							className="form-control"
 							type='datetime-local'
-							id='time'
+							id='filter-toTime'
 							value={toTimeInput.value}
 							onChange={toTimeInput.valueChangeHandler}
 							onBlur={toTimeInput.inputBlurHandler}
