@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { IUserInfo } from "../../model/UserInfo";
-import MyFoods from "../food/MyFoods";
+import UserFoods from "../food/UserFoods";
 import PageNotFound from "../PageNotFound";
 import AdminLayout from "./AdminLayout";
 import AllUserFoods from "./AllUserFoods";
@@ -16,7 +16,7 @@ export default function AdminApp(props: {
                 <Routes>
                     <Route path="/">
                         <Route index element={<Navigate replace to="/my-consumption" />} />
-                        <Route path="/my-consumption" element={<MyFoods userInfo={props.userInfo} />} />
+                        <Route path="/my-consumption" element={<UserFoods userInfo={props.userInfo} />} />
                         <Route path="/everyones-consumption" element={<AllUserFoods myUserInfo={props.userInfo} />} />
                         <Route path="/report" element={<ReportScreen />} />
                     </Route>

@@ -8,7 +8,7 @@ import AddFoodForm from './AddFoodForm';
 import AllFoods from './AllFoods';
 import { IEditEvents } from './EditFoodForm';
 
-export default function MyFoods(props: {
+export default function UserFoods(props: {
     userInfo: IUserInfo,
 }): ReactElement {
     const api = useApi();

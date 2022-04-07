@@ -2,7 +2,7 @@ import React, { ReactElement, useCallback, useEffect, useState } from "react";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import useApi from "../../hooks/use-api";
 import { IUserInfo } from "../../model/UserInfo";
-import MyFoods from "../food/MyFoods";
+import UserFoods from "../food/UserFoods";
 import UseApiView from "../UseApiView";
 
 export default function AllUserFoods(props: {
@@ -81,7 +81,7 @@ export default function AllUserFoods(props: {
 
 				{selectedUserInfo !== null
 					?
-					<MyFoods userInfo={selectedUserInfo!} />
+					<UserFoods userInfo={selectedUserInfo!} />
 					:
 					<></>
 				}
